@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaya.permission.dao.UserPermissionMapperExt">
+    <update id="updateTypeStatus" parameterType="userPermissionDTO">
+      UPDATE
+          USER_PERMISSION
+      SET
+          USER_PERMISSION_STATUS = #{userPermissionStatus},
+          LAST_UPDATE_DATE = now()
+      WHERE
+          1=1
+        <if test="userPermissionIdList != null">
+            AND USER_PERMISSION_ID IN
+            <foreach collection="userPermissionIdList" index="index" item="userPermissionId" open="(" separator="," close=")">
+                #{userPermissionId}
+            </foreach>
+        </if>
+        <if test="userType != null and userType != ''" >
+            AND USER_TYPE = #{userType}
+        </if>
+        <if test="permissionId != null and permissionId != ''" >
+              AND PERMISSION_ID = #{permissionId}
+        </if>
+    </update>
+
+    <delete id="delUserPermission" parameterType="userPermissionDTO">
+        DELETE FROM
+            USER_PERMISSION
+        WHERE 1=1
+        <if test="userPermissionIdList != null">
+            AND USER_PERMISSION_ID IN
+            <foreach collection="userPermissionIdList" index="index" item="userPermissionId" open="(" separator="," close=")">
+                #{userPermissionId}
+            </foreach>
+        </if>
+    </delete>
+
+    <select id="getUserPermissionByTypeAndPermission" parameterType="userPermissionDTO" resultType="userPermissionDTO">
+          SELECT
+            USER_PERMISSION_ID userPermissionId,
+            USER_TYPE userType,
+            PERMISSION_ID permissionId,
+            USER_PERMISSION_STATUS userPermissionStatus,
+            CREATE_DATE createDate,
+            LAST_UPDATE_DATE lastUpdateDate
+          FROM
+            USER_PERMISSION
+          WHERE
+            USER_TYPE = #{userType}
+          AND PERMISSION_ID = #{permissionId}
+    </select>
+</mapper>

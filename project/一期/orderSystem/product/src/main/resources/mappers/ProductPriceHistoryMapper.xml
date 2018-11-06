@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaya.product.dao.ProductPriceHistoryMapper">
+
+    <insert id="addProductPriceHistory" parameterType="productPriceHistoryDTO" >
+        INSERT INTO PRODUCT_PRICE_HISTORY(
+            PRODUCT_PRICE_HISTORY_ID,
+            MERCHANT_ID,
+            MERCHANT_NAME,
+            PRODUCT_ID,
+            PRODUCT_NAME,
+            PRODUCT_PRICE,
+            CREATE_TIME
+        )
+        VALUES
+        (
+            #{productPriceHistoryId},
+            #{merchantId},
+            #{merchantName},
+            #{productId},
+            #{productName},
+            #{productPrice},
+            now()
+        )
+    </insert>
+
+    <select id="getProductPriceHistorys" parameterType="productPriceHistoryDTO" resultType="productPriceHistoryDTO">
+        SELECT
+            PRODUCT_PRICE_HISTORY_ID productPriceHistoryId,
+            MERCHANT_ID merchantId,
+            MERCHANT_NAME merchantName,
+            PRODUCT_ID productId,
+            PRODUCT_NAME productName,
+            PRODUCT_PRICE productPrice,
+            CREATE_TIME createTime
+        FROM
+            PRODUCT_PRICE_HISTORY
+        WHERE
+            MERCHANT_ID = #{merchantId}
+        <if test="productName != null and productName != ''">
+            AND PRODUCT_NAME LIKE CONCAT('%',#{productName},'%')
+        </if>
+        <if test="productId != null and productId != ''">
+            AND PRODUCT_ID = #{productId}
+        </if>
+        ORDER BY PRODUCT_ID,CREATE_TIME
+    </select>
+
+</mapper>

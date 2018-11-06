@@ -1,0 +1,11 @@
+﻿商家：
+merchant、merchant_evaluate、merchant_order、merchant_public_discount、merchant_public_discount_history
+
+送餐员：
+delivery、delivery_order
+
+权限：
+permission,user_permission
+
+产品:
+merchant_product、product

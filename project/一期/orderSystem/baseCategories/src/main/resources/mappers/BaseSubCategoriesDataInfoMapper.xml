@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaya.baseCategories.dao.BaseSubCategoriesDataInfoMapper">
+    <insert id="addBaseSubCategoriesData" parameterType="baseSubCategoriesDataInfoDTO">
+        INSERT INTO BASE_SUB_CATEGORIES_DATA_INFO
+        (
+            SUB_CATEGORIES_DATA_INFO_ID,
+            CATEGORIES_DATA_INFO_ID,
+            CATEGORIES_CODE,
+            CATEGORIES_VALUE,
+            CREATION_DATE
+        )
+        VALUES
+        <foreach collection="baseSubCategoriesDataInfoDTOList" index="index" item="baseSubCategoriesDataInfoDTO" open="(" separator="," close=")">
+            #{subCategoriesDataInfoId},
+            #{subCategoriesDataInfoId},
+            #{baseSubCategoriesDataInfoDTO.categoriesCode},
+            #{baseSubCategoriesDataInfoDTO.categoriesValue},
+            NOW()
+        </foreach>
+    </insert>
+
+    <select id="getCodeAndValueByBatch" parameterType="baseSubCategoriesDataInfoDTO" resultType="baseSubCategoriesDataInfoDTO">
+        SELECT
+            BSCDI.CATEGORIES_DATA_INFO_ID categoriesDataInfoId,
+            BSCDI.SUB_CATEGORIES_DATA_INFO_ID subCategoriesDataInfoId,
+            BSCDI.CATEGORIES_CODE categoriesCode,
+            BSCDI.CATEGORIES_VALUE categoriesValue
+        FROM
+            BASE_CATEGORIES_DATA_INFO BCDI,
+            BASE_SUB_CATEGORIES_DATA_INFO BSCDI
+        WHERE
+            BCDI.CATEGORIES_DATA_INFO_ID = BSCDI.CATEGORIES_DATA_INFO_ID
+        AND BCDI.CATEGORIES_NAME = #{categoriesName}
+        <if test="categoriesCodeList != null">
+            AND BSCDI.CATEGORIES_CODE IN
+            <foreach collection="categoriesCodeList" index="index" item="code" open="(" separator="," close=")">
+                #{code}
+            </foreach>
+        </if>
+    </select>
+
+    <delete id="deleteBaseSubCategories" parameterType="java.lang.String">
+        DELETE FROM BASE_SUB_CATEGORIES_DATA_INFO WHERE CATEGORIES_DATA_INFO_ID = #{categoriesDataInfoId}
+    </delete>
+</mapper>

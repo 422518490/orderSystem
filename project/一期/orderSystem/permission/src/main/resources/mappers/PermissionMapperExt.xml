@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaya.permission.dao.PermissionMapperExt">
+    <select id="getPermissions" parameterType="permissionDTO" resultType="permissionDTO">
+          SELECT
+              P.PERMISSION_ID permissionId,
+              P.PERMISSION_NAME permissionName,
+              P.METHOD_NAME methodName,
+              P.CREATE_DATE createDate,
+              UP.LAST_UPDATE_DATE lastUpdateDate,
+              UP.USER_TYPE userType,
+              UP.USER_PERMISSION_ID userPermissionId,
+              UP.USER_PERMISSION_STATUS userPermissionStatus
+          FROM
+              PERMISSION P,
+              USER_PERMISSION UP
+          WHERE
+              P.PERMISSION_ID = UP.PERMISSION_ID
+          <if test="permissionName != null and permissionName != ''">
+              AND P.PERMISSION_NAME LIKE CONCAT('%',#{permissionName},'%')
+          </if>
+          <if test="methodName != null and methodName != ''">
+              AND P.METHOD_NAME LIKE CONCAT('%',#{methodName},'%')
+          </if>
+          <if test="userType != null and userType != ''">
+              AND UP.USER_TYPE = #{userType}
+          </if>
+    </select>
+
+    <select id="getPermissionByMethod" parameterType="java.lang.String" resultType="permissionDTO">
+        SELECT
+            P.PERMISSION_ID permissionId,
+            P.PERMISSION_NAME permissionName,
+            P.METHOD_NAME methodName,
+            P.CREATE_DATE createDate
+        FROM
+            PERMISSION P
+        WHERE
+            P.METHOD_NAME = #{methodName}
+    </select>
+
+    <select id="getMethodNameByType" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            P.METHOD_NAME methodName
+        FROM
+            PERMISSION P,
+            USER_PERMISSION UP
+        WHERE
+            P.PERMISSION_ID = UP.PERMISSION_ID
+        AND UP.USER_TYPE = #{userType}
+    </select>
+
+</mapper>

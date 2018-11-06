@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaya.operationLog.dao.OperationLogMapper">
+    <insert id="addOperationLog" parameterType="operationLogDTO">
+        INSERT INTO OPERATION_LOG
+        (
+            OPERATION_ID,
+            OPERATION_TYPE,
+            FROM_ID,
+            TO_ID,
+            OPERATION_DESC,
+            CREATE_TIME
+        )
+        VALUES
+        (
+            #{operationId},
+            #{operationType},
+            #{fromId},
+            #{toId},
+            #{operationDesc},
+            NOW()
+        )
+    </insert>
+
+    <select id="getOperationLogs" parameterType="operationLogDTO" resultType="operationLogDTO">
+        SELECT
+            OL.OPERATION_ID operationId,
+            OL.FROM_ID fromId,
+            OL.TO_ID toId,
+            OL.OPERATION_TYPE operationType,
+            BSCDI.CATEGORIES_VALUE operationTypeValue ,
+            OL.OPERATION_DESC operationDesc,
+            OL.CREATE_TIME creationTime
+        FROM
+            OPERATION_LOG OL,
+            BASE_CATEGORIES_DATA_INFO BCDI,
+            BASE_SUB_CATEGORIES_DATA_INFO BSCDI
+        WHERE
+            BCDI.CATEGORIES_DATA_INFO_ID = BSCDI.CATEGORIES_DATA_INFO_ID
+        AND BCDI.CATEGORIES_NAM = 'OPERATION_LOG'
+        AND OL.OPERATION_TYPE = BSCDI.CATEGORIES_CODE
+        <if  test="operationType != null and operationType != ''">
+            AND OL.OPERATION_TYPE = #{operationType}
+        </if>
+    </select>
+</mapper>

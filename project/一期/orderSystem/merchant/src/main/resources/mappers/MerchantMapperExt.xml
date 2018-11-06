@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaya.merchant.dao.MerchantMapperExt">
+  <select id="loginByMerchantName" parameterType="merchantDTO" resultType="merchantDTO">
+    SELECT
+      MERCHANT_ID merchantId,
+      MERCHANT_LOGIN_NAME merchantLoginName,
+      MERCHANT_NAME merchantName,
+      MERCHANT_PASSWORD merchantPassword,
+      SALT salt,
+      USER_TYPE userType,
+      MERCHANT_TEL_PHONE merchantTelPhone,
+      MERCHANT_MOBILEPHONE merchantMobilephone,
+      MERCHANT_BUSINESS_LICENSE merchantBusinessLicense,
+      MERCHANT_PHOTO merchantPhoto,
+      MERCHANT_ADDRESS merchantAddress,
+      MERCHANT_LONGITUDE merchantLongitude,
+      MERCHANT_LATITUDE merchantLatitude,
+      MERCHANT_ENABLE merchantEnable,
+      CREATE_TIME createTime,
+      LAST_UPDATE_TIME lastUpdateTime
+    FROM
+      MERCHANT
+    WHERE
+      MERCHANT_LOGIN_NAME = #{merchantLoginName}
+    AND MERCHANT_ENABLE = '01'
+  </select>
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaya.baseCategories.dao.BaseCategoriesDataInfoMapper">
+    <insert id="addBaseCategoriesData" parameterType="baseCategoriesDataInfoDTO">
+        INSERT INTO BASE_CATEGORIES_DATA_INFO
+        (
+            CATEGORIES_DATA_INFO_ID,
+            CATEGORIES_NAME,
+            CREATION_DATE
+        )
+        VALUES
+        (
+            #{categoriesDataInfoId},
+            #{categoriesName},
+            NOW()
+        )
+    </insert>
+
+    <delete id="deleteBaseCategoriesById" parameterType="java.lang.String">
+        DELETE FROM BASE_CATEGORIES_DATA_INFO WHERE CATEGORIES_DATA_INFO_ID = #{categoriesDataInfoId}
+    </delete>
+
+    <select id="getBaseCategoriesByName" parameterType="java.lang.String" resultMap="baseCategoriesDataInfoDTO">
+        SELECT
+            CATEGORIES_DATA_INFO_ID categoriesDataInfoId,
+            CATEGORIES_NAME categoriesName,
+            CREATION_DATE creationDate
+        FROM
+            BASE_CATEGORIES_DATA_INFO
+        WHERE
+            CATEGORIES_NAME = #{categoriesName}
+    </select>
+</mapper>

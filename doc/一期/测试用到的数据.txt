@@ -1,0 +1,28 @@
+商家注册接口(/merchantRegister):
+{
+    "merchantLoginName":"mer_liaoyubo",
+    "merchantName":"测试商家1",
+    "merchantPassword":"111111",
+    "merchantMobilephone":"13550375387",
+    "merchantBusinessLicense":"xxxxx",
+    "merchantAddress":"重庆市渝北区互联网产业园7栋"
+}
+
+商家登陆接口(/merchantLogin):
+注意：这里body需要空的"text"
+
+
+权限注册(/permission/addPermission)：
+{
+    "permissionName":"商家登陆",
+    "methodName":"merchantLogin",
+    "userTypeStr":"01"
+}
+
+新增产品(/product/addProduct)：
+{
+    "productName":"鱼香肉丝",
+    "productDescription":"鱼香肉丝炒饭送饮料",
+    "productPrice":13.5,
+    "merchantId":"41d88112d3b747e3a1b21b462d5553e5"
+}

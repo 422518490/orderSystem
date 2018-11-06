@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaya.order.dao.OrdersMapper">
+    <insert id="addOrders" parameterType="ordersDTO">
+        INSERT INTO ORDERS
+        (
+            ORDER_ID,
+            CLIENT_ID,
+            MERCHANT_ID,
+            ORDER_STATUS,
+            ORDER_TOTAL_AMOUNT,
+            ORDER_DESC,
+            CREATE_TIME
+        )
+        VALUES
+        (
+            #{orderId},
+            #{clientId},
+            #{merchantId},
+            '01',
+            #{orderTotalAmount},
+            #{orderDesc},
+            NOW()
+        )
+
+    </insert>
+    
+    <select id="getOrdersByMerchantId" parameterType="ordersDTO" resultMap="ordersDTO">
+
+    </select>
+</mapper>
