@@ -25,6 +25,7 @@
         <module>operationLog</module>
         <module>baseCategories</module>
         <module>cloudConfigServer</module>
+        <module>gateway</module>
     </modules>
 
     <parent>
@@ -33,9 +34,14 @@
         <version>2.0.6.RELEASE</version>
     </parent>
     <dependencies>
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>-->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
         <dependency>
