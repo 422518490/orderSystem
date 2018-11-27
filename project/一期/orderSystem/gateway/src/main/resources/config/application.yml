@@ -22,14 +22,16 @@ spring:
           enabled:  true
       routes:
         - id: merchant
+          #采用注册中心的注册名字的方式
           uri:  lb://MERCHANT
           predicates:
             - Path=/merchant/**
+          #采用ip地址+端口方式
         - id: configServer
           uri:  http://localhost:8091
           predicates:
             - Path=/config/**
-        - id: 163                     #网关路由到baidu
-          uri: http://www.baidu.com/
+        - id: permission
+          uri: http://localhost:8089
           predicates:
-            - Path=/b/**
+            - Path=/permission/**
