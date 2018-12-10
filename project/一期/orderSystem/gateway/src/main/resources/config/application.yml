@@ -35,3 +35,8 @@ spring:
           uri: http://localhost:8089
           predicates:
             - Path=/permission/**
+          filters:
+            - name: Hystrix
+              args:
+                name: getMethodNameByType
+                fallbackUri: forward:/getMethodNameByTypeHystrix
