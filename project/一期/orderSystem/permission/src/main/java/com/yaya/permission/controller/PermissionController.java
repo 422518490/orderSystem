@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author liaoyubo
@@ -112,6 +113,8 @@ public class PermissionController implements PermissionControllerInterface{
     public MultiDataResponse<String> getMethodNameByType(@RequestParam(value = "userType")String userType){
         MultiDataResponse<String> multiDataResponse = new MultiDataResponse<>();
         try {
+            //
+            TimeUnit.MINUTES.sleep(5);
             List<String> methodNameList = permissionService.getMethodNameByType(userType);
             multiDataResponse.setData(methodNameList);
             multiDataResponse.setCode(ResponseCode.SUCCESS);

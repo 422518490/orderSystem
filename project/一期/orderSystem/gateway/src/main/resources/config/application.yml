@@ -39,4 +39,4 @@ spring:
             - name: Hystrix
               args:
                 name: getMethodNameByType
-                fallbackUri: forward:/getMethodNameByTypeHystrix
+                fallbackUri: forward:http://localhost:8089/permission/getMethodNameByTypeHystrix

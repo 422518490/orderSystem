@@ -1,0 +1,89 @@
+# 开启熔断机制
+feign:
+  hystrix:
+    enabled: true
+
+ribbon:
+  # 开启eureka与ribbon的集成
+  eureka:
+    enabled: true
+  # 暂不开启熔断机制
+  hystrix:
+    enabled: false
+  # 配置ribbon默认的超时时间
+  ConnectTimeout: 20000
+  ReadTimeout: 20000
+  # 是否开启重试
+  OkToRetryOnAllOperations: true
+  # 重试的时候实例切换次数
+  MaxAutoRetriesNextServer: 3
+  # 每个实例重试次数
+  MaxAutoRetries: 2
+
+## hystrix相关配置
+## hystrix默认会读取classpath下的config.properties文件，application会覆盖config.properties中的属性
+hystrix:
+  threadpool:
+    # 指定服务的配置
+    user-service:
+      coreSize: 20
+      maxQueueSize: 200
+      queueSizeRejectionThreshold: 3
+    # userThreadPool是UserTimeOutCommand中配置的threadPoolKey
+    userThreadPool:
+      coreSize: 20
+      maxQueueSize: 20
+      queueSizeRejectionThreshold: 3
+    # 这是默认的配置
+    default:
+      coreSize: 10
+      maxQueueSize: 200
+      queueSizeRejectionThreshold: 2
+  command:
+    # 指定feign客户端中具体的方法
+    # UserService#timeout():
+    #   execution:
+    #     isolation:
+    #       thread:
+    #         timeoutInMilliseconds: 20000
+    # userCommandKey:
+    #   execution:
+    #     isolation:
+    #       thread:
+    #         timeoutInMilliseconds: 15000
+    # 这是默认的配置
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          strategy: THREAD
+          thread:
+            timeoutInMilliseconds: 15000
+            interruptOnTimeout: true
+            interruptOnFutureCancel: false
+          semaphore:
+            maxConcurrentRequests: 2
+      fallback:
+        enabled: true
+        isolation:
+          semaphore:
+            maxConcurrentRequests: 10
+      circuitBreaker:
+        enabled: true
+        forceOpen: false
+        forceClosed: false
+        requestVolumeThreshold: 4
+        errorThresholdPercentage: 50
+        sleepWindowInMilliseconds: 10000
+      metrics:
+        rollingStats:
+          timeInMilliseconds: 5000
+          numBuckets: 10
+        rollingPercentile:
+          enabled: true
+          timeInMilliseconds: 60000
+          numBuckets: 6
+          bucketSize: 100
+        healthSnapshot:
+          intervalInMilliseconds: 500
