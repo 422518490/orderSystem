@@ -1,6 +1,7 @@
 package com.yaya.permission.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.yaya.common.response.*;
 import com.yaya.common.util.ValidatorUtil;
 import com.yaya.orderApi.permissionDTO.PermissionDTO;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +69,6 @@ public class PermissionController implements PermissionControllerInterface{
             baseResponse.setCode(ResponseCode.SERVER_ERROR);
             baseResponse.setMsg("服务器错误");
             logger.error("SERVER_ERROR: " + e);
-            e.printStackTrace();
         }
         return baseResponse;
     }
@@ -96,7 +97,6 @@ public class PermissionController implements PermissionControllerInterface{
             pageResponse.setCode(ResponseCode.SERVER_ERROR);
             pageResponse.setMsg("服务器错误");
             logger.error("SERVER_ERROR: " + e);
-            e.printStackTrace();
         }
         return pageResponse;
     }
@@ -108,6 +108,7 @@ public class PermissionController implements PermissionControllerInterface{
      */
     //@RequestMapping(value = "/getMethodNameByType")
     @Override
+    @HystrixCommand
     public MultiDataResponse<String> getMethodNameByType(@RequestParam(value = "userType")String userType){
         MultiDataResponse<String> multiDataResponse = new MultiDataResponse<>();
         try {
@@ -119,7 +120,22 @@ public class PermissionController implements PermissionControllerInterface{
             multiDataResponse.setCode(ResponseCode.SERVER_ERROR);
             multiDataResponse.setMsg("服务器错误");
             logger.error("SERVER_ERROR: " + e);
-            e.printStackTrace();
+        }
+        return multiDataResponse;
+    }
+
+    @GetMapping(value = "/getMethodNameByTypeHystrix")
+    public MultiDataResponse<String> getMethodNameByTypeHystrix(@RequestParam(value = "userType")String userType){
+        MultiDataResponse<String> multiDataResponse = new MultiDataResponse<>();
+        try {
+            List<String> methodNameList = new ArrayList<>();
+            multiDataResponse.setData(methodNameList);
+            multiDataResponse.setCode(ResponseCode.SUCCESS);
+            multiDataResponse.setMsg("获取方法列表成功");
+        }catch (Exception e){
+            multiDataResponse.setCode(ResponseCode.SERVER_ERROR);
+            multiDataResponse.setMsg("服务器错误");
+            logger.error("SERVER_ERROR: " + e);
         }
         return multiDataResponse;
     }
