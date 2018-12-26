@@ -54,4 +54,9 @@ public class ResponseCode {
      */
     public static final int SOURCE_NOT_EXIST_ERROR=410;
 
+    /**
+     * 请求超时
+     */
+    public static final int REQUEST_TIME_OUT = 504;
+
 }

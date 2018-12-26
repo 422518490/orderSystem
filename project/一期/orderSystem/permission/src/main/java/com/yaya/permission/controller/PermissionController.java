@@ -113,7 +113,7 @@ public class PermissionController implements PermissionControllerInterface{
     public MultiDataResponse<String> getMethodNameByType(@RequestParam(value = "userType")String userType){
         MultiDataResponse<String> multiDataResponse = new MultiDataResponse<>();
         try {
-            //
+            // 测试断路器
             TimeUnit.MINUTES.sleep(5);
             List<String> methodNameList = permissionService.getMethodNameByType(userType);
             multiDataResponse.setData(methodNameList);
@@ -126,23 +126,4 @@ public class PermissionController implements PermissionControllerInterface{
         }
         return multiDataResponse;
     }
-
-    @GetMapping(value = "/getMethodNameByTypeHystrix")
-    public MultiDataResponse<String> getMethodNameByTypeHystrix(@RequestParam(value = "userType")String userType){
-        MultiDataResponse<String> multiDataResponse = new MultiDataResponse<>();
-        try {
-            List<String> methodNameList = new ArrayList<>();
-            multiDataResponse.setData(methodNameList);
-            multiDataResponse.setCode(ResponseCode.SUCCESS);
-            multiDataResponse.setMsg("获取方法列表成功");
-        }catch (Exception e){
-            multiDataResponse.setCode(ResponseCode.SERVER_ERROR);
-            multiDataResponse.setMsg("服务器错误");
-            logger.error("SERVER_ERROR: " + e);
-        }
-        return multiDataResponse;
-    }
-
-
-
 }
