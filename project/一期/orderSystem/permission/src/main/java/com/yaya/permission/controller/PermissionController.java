@@ -114,7 +114,7 @@ public class PermissionController implements PermissionControllerInterface{
         MultiDataResponse<String> multiDataResponse = new MultiDataResponse<>();
         try {
             // 测试断路器
-            TimeUnit.MINUTES.sleep(5);
+            //TimeUnit.MINUTES.sleep(5);
             List<String> methodNameList = permissionService.getMethodNameByType(userType);
             multiDataResponse.setData(methodNameList);
             multiDataResponse.setCode(ResponseCode.SUCCESS);
