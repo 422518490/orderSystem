@@ -9,3 +9,4 @@
 - 8.实现了spring cloud config的github远程配置文件
 - 1).由于版本原因，配置webhook后推送到本地不会主动刷新，需要手动调用/actuator/bus-refresh刷新配置缓存
 - 9.添加hystrix熔断器
+- 10.添加gateway
