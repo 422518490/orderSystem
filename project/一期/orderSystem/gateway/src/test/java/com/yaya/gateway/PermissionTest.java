@@ -44,9 +44,9 @@ public class PermissionTest {
 
     @Test
     public void test() throws InterruptedException {
-        int count = 10;
+        int count = 10000;
         CyclicBarrier cyclicBarrier = new CyclicBarrier(count);
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        ExecutorService executorService = Executors.newFixedThreadPool(count);
         for (int i = 0;i < count;i++){
             executorService.submit(createThread(i,cyclicBarrier));
         }
@@ -57,9 +57,9 @@ public class PermissionTest {
     private Thread createThread(int i,CyclicBarrier cyclicBarrier) {
         Thread thread = new Thread(() ->{
             try {
-                System.out.println("Thread:" + Thread.currentThread().getName() + "提前准备完毕,time:" + System.currentTimeMillis());
+                //System.out.println("Thread:" + Thread.currentThread().getName() + "提前准备完毕,time:" + System.currentTimeMillis());
                 cyclicBarrier.await();
-                System.out.println("Thread:" + Thread.currentThread().getName() + "准备完毕,time:" + System.currentTimeMillis());
+                //System.out.println("Thread:" + Thread.currentThread().getName() + "准备完毕,time:" + System.currentTimeMillis());
                 ResponseEntity<String> response = restTemplate.exchange(url + "/permission/getMethodNameByType?userType={userType}" ,
                         HttpMethod.GET,
                         new HttpEntity(null),
