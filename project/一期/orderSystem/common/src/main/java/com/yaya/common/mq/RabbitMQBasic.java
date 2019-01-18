@@ -1,10 +1,13 @@
 package com.yaya.common.mq;
 
-import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.beans.factory.annotation.Value;
+import com.yaya.common.constant.RabbitExchangeConstant;
+import com.yaya.common.constant.RabbitQueueConstant;
+import com.yaya.common.constant.RabbitRoutingKeyConstant;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -19,21 +22,47 @@ import org.springframework.stereotype.Component;
 public class RabbitMQBasic {
 
     /**
-     *  操作日志消息队列且持久化
+     * 操作日志消息队列且持久化
+     *
      * @return
      */
     @Bean
-    public Queue operationLogQueue(){
-        return new Queue("operationLogQueue",true);
+    public Queue operationLogQueue() {
+        return new Queue("operationLogQueue", true);
+    }
+
+
+    /**
+     * 订单交换机
+     *
+     * @return
+     */
+    @Bean
+    public TopicExchange ordersExchange() {
+        return new TopicExchange(RabbitExchangeConstant.ORDER_EXCHANGE);
     }
 
     /**
-     * 订单队列
+     * 订单队列,同时持久化
+     *
+     * @return
+     */
+    @Bean(name = "ordersQueue")
+    public Queue ordersQueue() {
+        return new Queue(RabbitQueueConstant.ORDER_QUEUE, true);
+    }
+
+    /**
+     * 配置订单队列的路由key
+     *
+     * @param queue
+     * @param topicExchange
      * @return
      */
     @Bean
-    public Queue ordersQueue(){
-        return new Queue("ordersQueue",true);
+    Binding bindingExchangeOrder(@Qualifier("ordersQueue") Queue queue, TopicExchange topicExchange) {
+        // 绑定订单队列到交换机上，同时配置路由key为topic.order
+        return BindingBuilder.bind(queue).to(topicExchange).with(RabbitRoutingKeyConstant.ORDER_ROUTING_KEY);
     }
 
 }
