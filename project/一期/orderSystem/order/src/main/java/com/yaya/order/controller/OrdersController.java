@@ -10,13 +10,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.amqp.rabbit.support.CorrelationData;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author liaoyubo
@@ -25,12 +29,17 @@ import java.util.Map;
  */
 @RestController
 @Slf4j
+@RequestMapping(value = "/order")
 public class OrdersController implements ConfirmCallback {
 
     @Resource
     private RabbitTemplate rabbitTemplate;
 
+    @Resource
+    private RedisTemplate redisTemplate;
 
+
+    @PostMapping
     public BaseResponse addOrders(@RequestBody OrdersDTO ordersDTO) {
         BaseResponse baseResponse = new BaseResponse();
         try {
@@ -52,6 +61,11 @@ public class OrdersController implements ConfirmCallback {
                 baseResponse.setMsg("订单的价格不能为空");
                 return baseResponse;
             }
+
+            redisTemplate.opsForValue().set("orderTest",ordersDTO,10, TimeUnit.SECONDS);
+
+            log.info("orderTest:{}",redisTemplate.opsForValue().get("orderTest"));
+
             //amqpTemplate.convertAndSend("ordersQueue",ordersDTO);
             // 用于保证传送到rabbit mq后没有正确保存时的回调执行判断
             // 生成uuid主键

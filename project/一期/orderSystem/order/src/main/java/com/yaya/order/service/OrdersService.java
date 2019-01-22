@@ -1,6 +1,9 @@
 package com.yaya.order.service;
 
+import com.rabbitmq.client.Channel;
 import com.yaya.order.dto.OrdersDTO;
+import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.messaging.handler.annotation.Header;
 
 /**
  * @author liaoyubo
@@ -11,8 +14,11 @@ public interface OrdersService {
 
     /**
      * 新增订单
+     *
      * @param ordersDTO
+     * @param channel
+     * @param tag
      */
-    void addOrders(OrdersDTO ordersDTO);
+    void addOrders(OrdersDTO ordersDTO, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag);
 
 }

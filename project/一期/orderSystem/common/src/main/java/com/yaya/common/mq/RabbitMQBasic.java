@@ -37,7 +37,7 @@ public class RabbitMQBasic {
      *
      * @return
      */
-    @Bean
+    @Bean(name = "ordersExchange")
     public TopicExchange ordersExchange() {
         return new TopicExchange(RabbitExchangeConstant.ORDER_EXCHANGE);
     }
@@ -60,9 +60,10 @@ public class RabbitMQBasic {
      * @return
      */
     @Bean
-    Binding bindingExchangeOrder(@Qualifier("ordersQueue") Queue queue, TopicExchange topicExchange) {
+    Binding bindingExchangeOrder(@Qualifier("ordersQueue") Queue queue, @Qualifier("ordersExchange") TopicExchange topicExchange) {
         // 绑定订单队列到交换机上，同时配置路由key为topic.order
         return BindingBuilder.bind(queue).to(topicExchange).with(RabbitRoutingKeyConstant.ORDER_ROUTING_KEY);
     }
+
 
 }

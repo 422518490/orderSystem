@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Data
 public class RedisSetting {
-    @Value("${spring.redis.host}")
+    /*@Value("${spring.redis.host}")
     private String host;
 
     @Value("${spring.redis.port}")
@@ -29,5 +29,5 @@ public class RedisSetting {
     private int dataBase;
 
     @Value("${spring.redis.password}")
-    private String password;
+    private String password;*/
 }
