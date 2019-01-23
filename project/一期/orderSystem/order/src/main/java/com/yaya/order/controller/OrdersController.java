@@ -2,6 +2,7 @@ package com.yaya.order.controller;
 
 import com.yaya.common.constant.RabbitExchangeConstant;
 import com.yaya.common.constant.RabbitRoutingKeyConstant;
+import com.yaya.common.constant.RedisKeyConstant;
 import com.yaya.common.response.BaseResponse;
 import com.yaya.common.response.ResponseCode;
 import com.yaya.common.util.UUIDUtil;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -62,23 +64,27 @@ public class OrdersController implements ConfirmCallback {
                 return baseResponse;
             }
 
-            redisTemplate.opsForValue().set("orderTest",ordersDTO,10, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set("orderTest", ordersDTO, 10, TimeUnit.SECONDS);
 
-            log.info("orderTest:{}",redisTemplate.opsForValue().get("orderTest"));
+            log.info("orderTest:{}", redisTemplate.opsForValue().get("orderTest"));
 
             //amqpTemplate.convertAndSend("ordersQueue",ordersDTO);
             // 用于保证传送到rabbit mq后没有正确保存时的回调执行判断
             // 生成uuid主键
             String uuid = UUIDUtil.getUUID();
+            ordersDTO.setOrderId(uuid);
+
+            //redis中缓存订单信息，防止MQ发送失败
+            redisTemplate.opsForHash().put(RedisKeyConstant.ORDER_HASH, uuid, ordersDTO);
+
             CorrelationData correlationData = new CorrelationData();
             correlationData.setId(uuid);
-            ordersDTO.setOrderId(uuid);
             rabbitTemplate.convertAndSend(RabbitExchangeConstant.ORDER_EXCHANGE,
                     RabbitRoutingKeyConstant.ORDER_ROUTING_KEY,
                     ordersDTO,
                     correlationData);
         } catch (Exception e) {
-            log.error("新增订单错误:{}" , e);
+            log.error("新增订单错误:{}", e);
             baseResponse.setCode(ResponseCode.SERVER_ERROR);
             baseResponse.setMsg("服务器错误");
         }
@@ -87,6 +93,22 @@ public class OrdersController implements ConfirmCallback {
 
     @Override
     public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+        // 如果消息投递失败，如何处理
+        if (ack) {
+            // 删除redis缓存
+            redisTemplate.opsForHash().delete(RedisKeyConstant.ORDER_HASH, correlationData.getId());
+        } else {
+            String id = correlationData.getId();
+            log.error("uuid为{}的订单发送MQ失败：{}", id, cause);
 
+            // 重新投递
+            Object ordersDTO = redisTemplate.opsForHash().get(RedisKeyConstant.ORDER_HASH, id);
+            if (Optional.ofNullable(ordersDTO).isPresent()) {
+                rabbitTemplate.convertAndSend(RabbitExchangeConstant.ORDER_EXCHANGE,
+                        RabbitRoutingKeyConstant.ORDER_ROUTING_KEY,
+                        (OrdersDTO) ordersDTO,
+                        correlationData);
+            }
+        }
     }
 }

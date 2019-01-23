@@ -2,6 +2,9 @@ package com.yaya.order.service.impl;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
+import com.yaya.common.constant.RabbitExchangeConstant;
+import com.yaya.common.constant.RabbitRoutingKeyConstant;
+import com.yaya.common.util.UUIDUtil;
 import com.yaya.order.constant.OrderStatusConstant;
 import com.yaya.order.dao.OrdersMapperExt;
 import com.yaya.order.dto.OrdersDTO;
@@ -9,6 +12,8 @@ import com.yaya.order.service.OrdersService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
@@ -31,6 +36,9 @@ public class OrdersServiceImpl implements OrdersService {
     @Resource
     private OrdersMapperExt ordersMapperExt;
 
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+
     @Override
     @RabbitHandler
     @Transactional(rollbackFor = Exception.class)
@@ -41,7 +49,16 @@ public class OrdersServiceImpl implements OrdersService {
             ordersDTO.setOrderStatus(OrderStatusConstant.ORDER_NEW);
             ordersMapperExt.insertSelective(ordersDTO);
 
-            //保存完订单后，发送信息给商家
+            // 保存完订单后，发送信息给商家
+            String uuid = UUIDUtil.getUUID();
+            CorrelationData correlationData = new CorrelationData();
+            correlationData.setId(uuid);
+            rabbitTemplate.convertAndSend(RabbitExchangeConstant.ORDER_EXCHANGE,
+                    RabbitRoutingKeyConstant.ORDER_ROUTING_KEY,
+                    ordersDTO,
+                    correlationData);
+
+            // 发送一个通知消息给前端或者APP说明订单已经创建
 
             channel.basicAck(tag,false);
         } catch (Exception e) {

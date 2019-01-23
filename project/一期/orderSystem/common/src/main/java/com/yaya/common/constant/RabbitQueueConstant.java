@@ -12,5 +12,10 @@ public class RabbitQueueConstant {
      * 订单队列名称
      */
     public static final String ORDER_QUEUE = "ordersQueue";
+
+    /**
+     * 订单已创建的队列名称
+     */
+    public static final String ORDER_CREATED_QUEUE = "orderCreatedQueue";
 }
 

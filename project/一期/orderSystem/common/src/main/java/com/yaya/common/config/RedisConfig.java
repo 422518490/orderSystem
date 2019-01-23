@@ -3,27 +3,29 @@ package com.yaya.common.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yaya.common.setting.RedisSetting;
-import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
 
-import javax.annotation.Resource;
+import java.time.Duration;
 
 /**
  * @author liaoyubo
  * @version 1.0
  * @date 2019/1/18
- * @description redis配置
+ * @description redis配置及缓存
  */
 @Configuration
-public class RedisConfig {
+@EnableCaching
+public class RedisConfig extends CachingConfigurerSupport {
 
     /*@Resource
     private RedisSetting redisSetting;
@@ -50,6 +52,40 @@ public class RedisConfig {
         cacheManager.setDefaultExpiration(redisSetting.getKeytimeout());
         return cacheManager;
     }*/
+
+    @Bean
+    public KeyGenerator wiselyKeyGenerator() {
+        return (target, method, params) -> {
+            StringBuilder sb = new StringBuilder();
+            sb.append(target.getClass().getName());
+            sb.append(method.getName());
+            for (Object obj : params) {
+                if (obj != null) {
+                    sb.append(obj.toString());
+                } else {
+                    sb.append("");
+                }
+            }
+            return sb.toString();
+        };
+    }
+
+    /**
+     * 设置redis 缓存时间 5 分钟
+     *
+     * @return
+     */
+    @Bean
+    public RedisCacheConfiguration redisCacheConfiguration() {
+        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+        RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig();
+        configuration = configuration.serializeValuesWith(
+                RedisSerializationContext
+                        .SerializationPair
+                        .fromSerializer(jackson2JsonRedisSerializer)
+        ).entryTtl(Duration.ofMinutes(5));
+        return configuration;
+    }
 
     @Bean
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {

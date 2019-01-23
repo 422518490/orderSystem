@@ -60,10 +60,25 @@ public class RabbitMQBasic {
      * @return
      */
     @Bean
-    Binding bindingExchangeOrder(@Qualifier("ordersQueue") Queue queue, @Qualifier("ordersExchange") TopicExchange topicExchange) {
+    Binding bindingExchangeOrder(@Qualifier("ordersQueue") Queue queue,
+                                 @Qualifier("ordersExchange") TopicExchange topicExchange) {
         // 绑定订单队列到交换机上，同时配置路由key为topic.order
         return BindingBuilder.bind(queue).to(topicExchange).with(RabbitRoutingKeyConstant.ORDER_ROUTING_KEY);
     }
 
+    /**
+     * 订单已创建的队列
+     * @return
+     */
+    @Bean(name = "orderCreatedQueue")
+    public Queue orderCreatedQueue(){
+        return new Queue(RabbitQueueConstant.ORDER_CREATED_QUEUE,true);
+    }
 
+    @Bean
+    Binding bindingExchangeOrderCreated(@Qualifier("orderCreatedQueue") Queue queue,
+                                        @Qualifier("ordersExchange") TopicExchange topicExchange){
+        // 绑定订单已创建队列到交换机上，同时配置路由key为topic.order
+        return BindingBuilder.bind(queue).to(topicExchange).with(RabbitRoutingKeyConstant.ORDER_ROUTING_KEY);
+    }
 }
