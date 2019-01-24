@@ -2,8 +2,10 @@ package com.yaya.order.service.impl;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ConfirmCallback;
 import com.yaya.common.constant.RabbitExchangeConstant;
 import com.yaya.common.constant.RabbitRoutingKeyConstant;
+import com.yaya.common.constant.WebSocketDestinationConstant;
 import com.yaya.common.util.UUIDUtil;
 import com.yaya.order.constant.OrderStatusConstant;
 import com.yaya.order.dao.OrdersMapperExt;
@@ -16,6 +18,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,13 +34,16 @@ import java.util.Date;
 @Service
 @RabbitListener(queues = "ordersQueue")
 @Slf4j
-public class OrdersServiceImpl implements OrdersService {
+public class OrdersServiceImpl implements OrdersService, ConfirmCallback {
 
     @Resource
     private OrdersMapperExt ordersMapperExt;
 
     @Resource
     private RabbitTemplate rabbitTemplate;
+
+    @Resource
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     @RabbitHandler
@@ -58,7 +64,8 @@ public class OrdersServiceImpl implements OrdersService {
                     ordersDTO,
                     correlationData);
 
-            // 发送一个通知消息给前端或者APP说明订单已经创建
+            // 发送一个通知消息给前端(websocket方式)或者APP(采用MQ)说明订单已经创建
+            simpMessagingTemplate.convertAndSend(WebSocketDestinationConstant.ORDER_CREATED_TOPIC, ordersDTO.getClientId());
 
             channel.basicAck(tag,false);
         } catch (Exception e) {
@@ -70,5 +77,10 @@ public class OrdersServiceImpl implements OrdersService {
                 log.error("重新确认消费订单信息错误:{}", ioe);
             }
         }
+    }
+
+    @Override
+    public void handle(long l, boolean b) throws IOException {
+
     }
 }
