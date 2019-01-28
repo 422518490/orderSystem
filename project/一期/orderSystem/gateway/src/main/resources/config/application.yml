@@ -40,3 +40,29 @@ spring:
               args:
                 name: getMethodNameByType
                 fallbackUri: forward:/getMethodNameByTypeHystrix
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            # 限流键
+            key-resolver: "#{@remoteAddressKeyResolver}"
+            # 令牌桶token限量过滤
+            rate-limiter: "#{@customRedisRateLimiter}"
+
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 5000
+    database: 4
+
+gateway:
+  limit:
+    # redis令牌桶token配置
+    redis-rate:
+      # 每个用户允许的请求数
+      replenish-rate: 10
+      # 允许的最大并发数
+      burst-capacity: 3000
+    throttle: # leaky
+      capacity: 10000
+      refill-tokens: 50
+      refill-period: 5
