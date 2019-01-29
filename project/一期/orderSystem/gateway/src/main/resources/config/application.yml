@@ -40,6 +40,10 @@ spring:
               args:
                 name: getMethodNameByType
                 fallbackUri: forward:/getMethodNameByTypeHystrix
+        - id: order
+          uri: http://localhost:8087
+          predicates:
+            - Path=/order/**
       default-filters:
         - name: RequestRateLimiter
           args:

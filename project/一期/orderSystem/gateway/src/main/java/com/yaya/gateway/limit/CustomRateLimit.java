@@ -2,6 +2,8 @@ package com.yaya.gateway.limit;
 
 import com.yaya.gateway.properties.GatewayLimitProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +29,7 @@ public class CustomRateLimit {
     @Bean(name = "customRedisRateLimiter")
     public RedisRateLimiter customRedisRateLimiter(GatewayLimitProperties gatewayLimitProperties) {
         GatewayLimitProperties.RedisRate redisRate = gatewayLimitProperties.getRedisRate();
-        if (Optional.ofNullable(redisRate).isPresent()) {
+        if (!Optional.ofNullable(redisRate).isPresent()) {
             throw new RuntimeException("配置未初始化");
         }
         return new RedisRateLimiter(redisRate.getReplenishRate(), redisRate.getBurstCapacity());
@@ -37,4 +39,5 @@ public class CustomRateLimit {
     public RemoteAddressKeyResolver remoteAddressKeyResolver(){
         return new RemoteAddressKeyResolver();
     }
+
 }

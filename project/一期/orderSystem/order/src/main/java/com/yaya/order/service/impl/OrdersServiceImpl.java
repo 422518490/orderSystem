@@ -42,8 +42,8 @@ public class OrdersServiceImpl implements OrdersService, ConfirmCallback {
     @Resource
     private RabbitTemplate rabbitTemplate;
 
-    @Resource
-    private SimpMessagingTemplate simpMessagingTemplate;
+    /*@Resource
+    private SimpMessagingTemplate simpMessagingTemplate;*/
 
     @Override
     @RabbitHandler
@@ -60,12 +60,12 @@ public class OrdersServiceImpl implements OrdersService, ConfirmCallback {
             CorrelationData correlationData = new CorrelationData();
             correlationData.setId(uuid);
             rabbitTemplate.convertAndSend(RabbitExchangeConstant.ORDER_EXCHANGE,
-                    RabbitRoutingKeyConstant.ORDER_ROUTING_KEY,
+                    RabbitRoutingKeyConstant.ORDER_MERCHANT_ROUTING_KEY,
                     ordersDTO,
                     correlationData);
 
             // 发送一个通知消息给前端(websocket方式)或者APP(采用MQ)说明订单已经创建
-            simpMessagingTemplate.convertAndSend(WebSocketDestinationConstant.ORDER_CREATED_TOPIC, ordersDTO.getClientId());
+            //simpMessagingTemplate.convertAndSend(WebSocketDestinationConstant.ORDER_CREATED_TOPIC, ordersDTO.getClientId());
 
             channel.basicAck(tag,false);
         } catch (Exception e) {

@@ -12,9 +12,14 @@ import java.util.Map;
 @Data
 public class BaseResponse {
 
-    //返回码
+    /**
+     * 返回码
+     */
     private int code;
-    //提示信息
+
+    /**
+     * 提示信息
+     */
     private String msg;
 
     private Map<String, String> errorMap;

@@ -44,6 +44,8 @@ public class OrdersController implements ConfirmCallback {
     @PostMapping
     public BaseResponse addOrders(@RequestBody OrdersDTO ordersDTO) {
         BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setCode(ResponseCode.SUCCESS);
+        baseResponse.setMsg("新增订单成功");
         try {
             Map<String, String> errMap = new HashMap<>();
 

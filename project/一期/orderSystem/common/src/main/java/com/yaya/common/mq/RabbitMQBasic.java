@@ -78,7 +78,7 @@ public class RabbitMQBasic {
     @Bean
     Binding bindingExchangeOrderCreated(@Qualifier("orderCreatedQueue") Queue queue,
                                         @Qualifier("ordersExchange") TopicExchange topicExchange){
-        // 绑定订单已创建队列到交换机上，同时配置路由key为topic.order
-        return BindingBuilder.bind(queue).to(topicExchange).with(RabbitRoutingKeyConstant.ORDER_ROUTING_KEY);
+        // 绑定订单已创建队列到交换机上，同时配置路由key为topic.order.merchant
+        return BindingBuilder.bind(queue).to(topicExchange).with(RabbitRoutingKeyConstant.ORDER_MERCHANT_ROUTING_KEY);
     }
 }
