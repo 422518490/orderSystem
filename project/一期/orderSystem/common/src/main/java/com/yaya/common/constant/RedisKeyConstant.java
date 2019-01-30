@@ -13,4 +13,9 @@ public class RedisKeyConstant {
      */
     public static final String ORDER_HASH = "orderHash";
 
+    /**
+     * 订单已创建的hash键常量值
+     */
+    public static final String ORDER_CREATED_HASH = "orderCreatedHash";
+
 }
