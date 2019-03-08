@@ -1,0 +1,85 @@
+server:
+  port: 8086
+
+mybatis:
+  mapper-locations: classpath:mappers/*.xml
+  config-location: classpath:page-config.xml
+
+
+#配置log日志,可改成logging.level.root=DEBUG 更为详细的日志
+logging:
+  level:
+    com:
+      yaya: DEBUG
+  path: /logs/
+
+#配置缓存redis
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1
+    timeout: 5000
+    database: 4
+    #单位是秒
+    keytimeout: 1000
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    publisher-confirms: true
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: AUTO
+  cloud:
+    config:
+      #开启配置服务发现
+      enabled: true
+      #配置服务实例名称
+      serviceId: config_server
+      #配置文件所在分支
+      label: master
+      #配置文件的开头名字
+      name: merchant
+      #配置文件的后面名字，如merchant-dev.properties
+      profile: dev
+      #配置服务中心
+      uri: http://localhost:8091/
+      #git登录的用户名
+      #username:
+      #git登录的密码
+      #password:
+    bus:
+      id: merchant_bus
+  application:
+    name: merchant
+    #配置服务注册中心服务器地址
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+feign:
+  compression:
+    request:
+      #开启请求压缩功能
+      enabled: true
+      #指定压缩请求数据类型
+      mime-types: text/xml;application/xml;application/json
+      #如果传输超过该字节，就对其进行压缩
+      min-request-size: 2018
+    #开启响应压缩功能
+    response:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh
