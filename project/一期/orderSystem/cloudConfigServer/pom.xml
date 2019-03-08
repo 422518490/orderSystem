@@ -14,12 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-config-server</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-config-monitor</artifactId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
     </dependencies>
 
@@ -31,7 +26,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.yaya.cloudConfigServer.CloudConfigServerApp</mainClass>
+                            <mainClass>com.yaya.cloudconfigserver.CloudConfigServerApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
