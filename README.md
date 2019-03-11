@@ -2,11 +2,10 @@
 - 1.实现商家的增删改查
 - 2.实现产品的增删改查
 - 3.实现自定义权限的过滤
-- 4.实现eureka及feign的商家和产品服务间调用
+- 4.实现feign的商家和产品服务间调用
 - 5.实现日志的查询以及新增
 - 6.实现ElasticJob定时器的引入
 - 7.实现自定义权限的增删改查
-- 8.实现了spring cloud config的github远程配置文件
-- 1).由于版本原因，配置webhook后推送到本地不会主动刷新，需要手动调用/actuator/bus-refresh刷新配置缓存
+- 8.使用alibaba的nacos实现注册中心和配置文件实现
 - 9.添加hystrix熔断器
 - 10.添加gateway
