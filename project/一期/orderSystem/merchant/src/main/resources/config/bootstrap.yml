@@ -6,15 +6,16 @@ mybatis:
   config-location: classpath:page-config.xml
 
 
-#ÅäÖÃlogÈÕÖ¾,¿É¸Ä³Élogging.level.root=DEBUG ¸üÎªÏêÏ¸µÄÈÕÖ¾
+#é…ç½®logæ—¥å¿—,å¯æ”¹æˆlogging.level.root=DEBUG æ›´ä¸ºè¯¦ç»†çš„æ—¥å¿—
 logging:
   level:
     com:
       yaya: DEBUG
   path: /logs/
 
-#ÅäÖÃ»º´æredis
+
 spring:
+  #é…ç½®ç¼“å­˜redis
   redis:
     host: localhost
     port: 6379
@@ -26,7 +27,7 @@ spring:
         max-wait: -1
     timeout: 5000
     database: 4
-    #µ¥Î»ÊÇÃë
+    #å•ä½æ˜¯ç§’
     keytimeout: 1000
   rabbitmq:
     host: localhost
@@ -39,47 +40,28 @@ spring:
       simple:
         acknowledge-mode: AUTO
   cloud:
-    config:
-      #¿ªÆôÅäÖÃ·şÎñ·¢ÏÖ
-      enabled: true
-      #ÅäÖÃ·şÎñÊµÀıÃû³Æ
-      serviceId: config_server
-      #ÅäÖÃÎÄ¼şËùÔÚ·ÖÖ§
-      label: master
-      #ÅäÖÃÎÄ¼şµÄ¿ªÍ·Ãû×Ö
-      name: merchant
-      #ÅäÖÃÎÄ¼şµÄºóÃæÃû×Ö£¬Èçmerchant-dev.properties
-      profile: dev
-      #ÅäÖÃ·şÎñÖĞĞÄ
-      uri: http://localhost:8091/
-      #gitµÇÂ¼µÄÓÃ»§Ãû
-      #username:
-      #gitµÇÂ¼µÄÃÜÂë
-      #password:
     bus:
       id: merchant_bus
+    nacos:
+      config:
+        #é…ç½®é…ç½®æœåŠ¡å™¨åœ°å€
+        server-addr: 127.0.0.1:8848
+      discovery:
+        #é…ç½®æœåŠ¡æ³¨å†Œä¸­å¿ƒæœåŠ¡å™¨åœ°å€
+        server-addr: 127.0.0.1:8848
   application:
     name: merchant
-    #ÅäÖÃ·şÎñ×¢²áÖĞĞÄ·şÎñÆ÷µØÖ·
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
 
 feign:
   compression:
     request:
-      #¿ªÆôÇëÇóÑ¹Ëõ¹¦ÄÜ
+      #å¼€å¯è¯·æ±‚å‹ç¼©åŠŸèƒ½
       enabled: true
-      #Ö¸¶¨Ñ¹ËõÇëÇóÊı¾İÀàĞÍ
+      #æŒ‡å®šå‹ç¼©è¯·æ±‚æ•°æ®ç±»å‹
       mime-types: text/xml;application/xml;application/json
-      #Èç¹û´«Êä³¬¹ı¸Ã×Ö½Ú£¬¾Í¶ÔÆä½øĞĞÑ¹Ëõ
-      min-request-size: 2018
-    #¿ªÆôÏìÓ¦Ñ¹Ëõ¹¦ÄÜ
+      #å¦‚æœä¼ è¾“è¶…è¿‡è¯¥å­—èŠ‚ï¼Œå°±å¯¹å…¶è¿›è¡Œå‹ç¼©
+      min-request-size: 2048
+    #å¼€å¯å“åº”å‹ç¼©åŠŸèƒ½
     response:
       enabled: true
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: bus-refresh
