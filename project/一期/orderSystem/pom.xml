@@ -51,11 +51,11 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
+
         <!--HikariCP数据连接池-->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>2.7.6</version>
         </dependency>
 
         <!--分页插件-->
@@ -173,7 +173,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.20</version>
         </dependency>
     </dependencies>
 

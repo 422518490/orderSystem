@@ -52,15 +52,3 @@ spring:
   application:
     name: permission
 
-feign:
-  compression:
-    request:
-      #开启请求压缩功能
-      enabled: true
-      #指定压缩请求数据类型
-      mime-types: text/xml;application/xml;application/json
-      #如果传输超过该字节，就对其进行压缩
-      min-request-size: 2048
-    #开启响应压缩功能
-    response:
-      enabled: true
