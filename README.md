@@ -9,7 +9,7 @@
 - 8.使用alibaba的nacos实现注册中心和配置文件实现
   有3中方式进行配置的实现：
   
-  第一种：通过 DataID与 profile实现。
+  第一种：通过 DataID与 profile(spring.profiles.active来指定具体的环境名称)实现。
   优点：这种方式与Spring Cloud Config的实现非常像，用过Spring Cloud Config的用户，可以毫无违和感的过渡过来，由于命名规则类似，所以要从Spring        Cloud Config中做迁移也非常简单。
   缺点：这种方式在项目与环境多的时候，配置内容就会显得非常混乱。配置列表中会看到各种不同应用，不同环境的配置交织在一起，非常不利于管理。
   建议：项目不多时使用，或者可以结合 Group对项目根据业务或者组织架构做一些拆分规划。
