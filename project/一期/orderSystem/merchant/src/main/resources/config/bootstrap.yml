@@ -3,8 +3,6 @@ server:
 
 spring:
   cloud:
-    bus:
-      id: merchant_bus
     nacos:
       config:
         #配置配置服务器地址
@@ -16,9 +14,17 @@ spring:
         #配置的前缀，默认是服务名spring.application.name，同时对应服务器配置详情里面的Data ID
         prefix: {spring.application.name}
         #配置List集合来添加多个配置文件
+        #通用配置
         ext-config[0]:
           #配置的服务器上的配置id
           data_id: common.yml
+          group: DEFAULT_GROUP
+          #表示配置文件变化是是否刷新操作
+          refresh: true
+        #redis配置
+        ext-config[1]:
+          #配置的服务器上的配置id
+          data_id: redis.yml
           group: DEFAULT_GROUP
           #表示配置文件变化是是否刷新操作
           refresh: true
@@ -33,4 +39,3 @@ spring:
         server-addr: 127.0.0.1:8848
   application:
     name: merchant
-

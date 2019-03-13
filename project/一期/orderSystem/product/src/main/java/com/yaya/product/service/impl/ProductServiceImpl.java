@@ -5,7 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.yaya.common.constant.OperationTypeConstant;
 import com.yaya.common.util.DateUtils;
 import com.yaya.common.util.UUIDUtil;
-import com.yaya.orderApi.operationLogInterface.OperationLogHandler;
+import com.yaya.orderapi.operationLogInterface.OperationLogHandler;
 import com.yaya.product.constant.ProductEnableConstant;
 import com.yaya.product.dto.ProductDTO;
 import com.yaya.product.dao.ProductMapper;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

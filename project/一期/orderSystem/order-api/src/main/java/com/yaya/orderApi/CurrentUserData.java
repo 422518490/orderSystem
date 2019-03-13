@@ -1,4 +1,4 @@
-package com.yaya.orderApi;
+package com.yaya.orderapi;
 
 import lombok.Data;
 

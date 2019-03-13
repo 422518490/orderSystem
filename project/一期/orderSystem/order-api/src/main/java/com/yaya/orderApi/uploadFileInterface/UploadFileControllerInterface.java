@@ -1,7 +1,7 @@
-package com.yaya.orderApi.uploadFileInterface;
+package com.yaya.orderapi.uploadFileInterface;
 
 import com.yaya.common.response.MultiDataResponse;
-import com.yaya.orderApi.uploadFileDTO.UploadFileDTO;
+import com.yaya.orderapi.uploadFileDTO.UploadFileDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

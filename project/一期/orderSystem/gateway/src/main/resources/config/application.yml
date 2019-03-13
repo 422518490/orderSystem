@@ -1,18 +1,6 @@
-#服务端口
-server:
-  port: 8093
-
-#配置服务注册中心服务器地址
-eureka:
-  client:
-    service-url:
-      defaultZone:  http://localhost:8010/eureka/
-
 
 #服务名称
 spring:
-  application:
-    name: gateway_server
   cloud:
     gateway:
       discovery:
@@ -51,12 +39,6 @@ spring:
             key-resolver: "#{@remoteAddressKeyResolver}"
             # 令牌桶token限量过滤
             rate-limiter: "#{@customRedisRateLimiter}"
-
-  redis:
-    host: localhost
-    port: 6379
-    timeout: 5000
-    database: 4
 
 gateway:
   limit:

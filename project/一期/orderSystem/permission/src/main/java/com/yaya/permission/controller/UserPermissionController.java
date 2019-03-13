@@ -3,7 +3,7 @@ package com.yaya.permission.controller;
 import com.yaya.common.response.BaseResponse;
 import com.yaya.common.response.ResponseCode;
 import com.yaya.common.util.ValidatorUtil;
-import com.yaya.orderApi.permissionDTO.UserPermissionDTO;
+import com.yaya.orderapi.permissionDTO.UserPermissionDTO;
 import com.yaya.permission.constant.UserPermissionStatus;
 import com.yaya.permission.service.UserPermissionService;
 import org.slf4j.Logger;

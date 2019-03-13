@@ -1,9 +1,7 @@
-package com.yaya.orderApi.merchantDTO;
+package com.yaya.orderapi.merchantDTO;
 
-import com.yaya.orderApi.merchantModel.Merchant;
+import com.yaya.orderapi.merchantModel.Merchant;
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 /**
  * @author liaoyubo

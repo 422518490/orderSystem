@@ -1,0 +1,41 @@
+server:
+  port: 8083
+
+spring:
+  cloud:
+    nacos:
+      config:
+        #配置配置服务器地址
+        server-addr: 127.0.0.1:8848
+        #配置文件的扩展名，默认是properties,同时对应服务器配置详情里面的配置格式
+        file-extension: properties
+        #配置的分组，默认是DEFAULT_GROUP，同时对应服务器配置详情里面的Group
+        group: DEFAULT_GROUP
+        #配置的前缀，默认是服务名spring.application.name，同时对应服务器配置详情里面的Data ID
+        prefix: {spring.application.name}
+        #配置List集合来添加多个配置文件
+        #通用配置
+        ext-config[0]:
+          #配置的服务器上的配置id
+          data_id: common.yml
+          group: DEFAULT_GROUP
+          #表示配置文件变化是是否刷新操作
+          refresh: true
+        #redis配置
+        ext-config[1]:
+          #配置的服务器上的配置id
+          data_id: redis.yml
+          group: DEFAULT_GROUP
+          #表示配置文件变化是是否刷新操作
+          refresh: true
+        #通过共享配置来配置多个配置文件，多个文件用,分割
+        shared-dataids: actuator.yml,datasource.yml
+        #通过刷新来对配置文件有更新时进行的刷新操作
+        refreshable-dataids: actuator.yml,datasource.yml
+        #通过命名空间来区分不同的环境，释放了Group的自由度，这样可以让 Group的使用专注于做业务层面的分组管理
+        #namespace: 67046ad9-6bff-47af-a82e-0550aa23cc0b
+      discovery:
+        #配置服务注册中心服务器地址
+        server-addr: 127.0.0.1:8848
+  application:
+    name: discount

@@ -1,4 +1,4 @@
-package com.yaya.orderApi.operationLogModel;
+package com.yaya.orderapi.operationLogModel;
 
 import java.io.Serializable;
 import java.util.Date;

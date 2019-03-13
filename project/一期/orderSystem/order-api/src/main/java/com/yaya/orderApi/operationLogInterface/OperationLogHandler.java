@@ -1,7 +1,7 @@
-package com.yaya.orderApi.operationLogInterface;
+package com.yaya.orderapi.operationLogInterface;
 
 import com.yaya.common.util.UUIDUtil;
-import com.yaya.orderApi.operationLogDTO.OperationLogDTO;
+import com.yaya.orderapi.operationLogDTO.OperationLogDTO;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package com.yaya.operationLog.dao;
 
-import com.yaya.orderApi.operationLogDTO.OperationLogDTO;
+import com.yaya.orderapi.operationLogDTO.OperationLogDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

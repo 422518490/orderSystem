@@ -1,7 +1,7 @@
-package com.yaya.orderApi.permissionDTO;
+package com.yaya.orderapi.permissionDTO;
 
 
-import com.yaya.orderApi.permissionModel.UserPermission;
+import com.yaya.orderapi.permissionModel.UserPermission;
 import lombok.Data;
 
 import java.util.List;

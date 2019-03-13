@@ -4,8 +4,8 @@
 <configuration>
 
     <typeAliases>
-        <typeAlias alias="permissionDTO" type="com.yaya.orderApi.permissionDTO.PermissionDTO" />
-        <typeAlias alias="userPermissionDTO" type="com.yaya.orderApi.permissionDTO.UserPermissionDTO" />
+        <typeAlias alias="permissionDTO" type="com.yaya.orderapi.permissionDTO.PermissionDTO" />
+        <typeAlias alias="userPermissionDTO" type="com.yaya.orderapi.permissionDTO.UserPermissionDTO" />
     </typeAliases>
 
     <plugins>

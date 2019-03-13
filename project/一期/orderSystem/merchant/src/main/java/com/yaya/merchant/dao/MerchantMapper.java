@@ -2,8 +2,8 @@ package com.yaya.merchant.dao;
 
 import java.util.List;
 
-import com.yaya.orderApi.merchantModel.Merchant;
-import com.yaya.orderApi.merchantModel.MerchantExample;
+import com.yaya.orderapi.merchantModel.Merchant;
+import com.yaya.orderapi.merchantModel.MerchantExample;
 import org.apache.ibatis.annotations.Param;
 
 public interface MerchantMapper {

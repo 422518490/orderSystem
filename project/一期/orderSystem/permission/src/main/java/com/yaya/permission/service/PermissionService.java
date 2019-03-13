@@ -2,7 +2,7 @@ package com.yaya.permission.service;
 
 
 import com.github.pagehelper.PageInfo;
-import com.yaya.orderApi.permissionDTO.PermissionDTO;
+import com.yaya.orderapi.permissionDTO.PermissionDTO;
 
 import java.util.List;
 

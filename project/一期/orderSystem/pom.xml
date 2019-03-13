@@ -12,7 +12,7 @@
         <module>merchant</module>
         <module>delivery</module>
         <module>common</module>
-        <module>security</module>
+        <!--<module>security</module>-->
         <module>permission</module>
         <module>order-api</module>
         <module>nacosServer</module>
@@ -212,6 +212,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <skip>true</skip>
                     <configurationFile>src/main/resources/mybatis-generator/generatorConfig.xml</configurationFile>
                     <goal>compile</goal>
                     <verbose>true</verbose>
@@ -241,12 +242,41 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                    <encoding>UTF-8</encoding>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
+            </plugin>
+
+            <!--处理资源文件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources/</directory>
+                                    <includes>
+                                        <include>config/*</include>
+                                        <include>config/*/*</include>
+                                    </includes>
+                                    <exclude>mybatis-generator</exclude>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

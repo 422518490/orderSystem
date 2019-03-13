@@ -1,4 +1,4 @@
-package com.yaya.orderApi.uploadFileDTO;
+package com.yaya.orderapi.uploadFileDTO;
 
 
 import lombok.Data;

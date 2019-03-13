@@ -4,7 +4,7 @@
 <configuration>
 
     <typeAliases>
-        <typeAlias alias="operationLogDTO" type="com.yaya.orderApi.operationLogDTO.OperationLogDTO" />
+        <typeAlias alias="operationLogDTO" type="com.yaya.orderapi.operationLogDTO.OperationLogDTO" />
     </typeAliases>
 
     <plugins>

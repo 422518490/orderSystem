@@ -1,6 +1,6 @@
-package com.yaya.orderApi.merchantInterface;
+package com.yaya.orderapi.merchantInterface;
 
-import com.yaya.orderApi.merchantDTO.MerchantDTO;
+import com.yaya.orderapi.merchantDTO.MerchantDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 

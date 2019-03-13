@@ -4,7 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.yaya.common.response.PageResponse;
 import com.yaya.common.response.ResponseCode;
 import com.yaya.operationLog.service.OperationLogService;
-import com.yaya.orderApi.operationLogDTO.OperationLogDTO;
+import com.yaya.orderapi.operationLogDTO.OperationLogDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

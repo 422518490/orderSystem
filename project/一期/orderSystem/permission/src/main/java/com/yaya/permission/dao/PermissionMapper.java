@@ -1,7 +1,7 @@
 package com.yaya.permission.dao;
 
 
-import com.yaya.orderApi.permissionModel.Permission;
+import com.yaya.orderapi.permissionModel.Permission;
 import com.yaya.permission.model.PermissionExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;

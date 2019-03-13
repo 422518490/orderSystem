@@ -8,12 +8,11 @@ import com.yaya.common.util.*;
 import com.yaya.merchant.orderapi.PermissionInterface;
 import com.yaya.merchant.service.MerchantService;
 import com.yaya.merchant.template.MerchantExportResult;
-import com.yaya.orderApi.CurrentUserData;
-import com.yaya.orderApi.merchantDTO.MerchantDTO;
-import com.yaya.orderApi.merchantInterface.MerchantControllerInterface;
-import com.yaya.orderApi.uploadFileDTO.UploadFileDTO;
-import com.yaya.orderApi.uploadFileInterface.UploadFileControllerInterface;
-import com.yaya.security.access.AccessRequired;
+import com.yaya.orderapi.CurrentUserData;
+import com.yaya.orderapi.merchantDTO.MerchantDTO;
+import com.yaya.orderapi.merchantInterface.MerchantControllerInterface;
+import com.yaya.orderapi.uploadFileDTO.UploadFileDTO;
+import com.yaya.orderapi.uploadFileInterface.UploadFileControllerInterface;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -149,7 +148,6 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
      * @return
      */
     @RequestMapping(value = "/merchant/getMerchant")
-    @AccessRequired
     public CommonResponse<MerchantDTO> getMerchant(@RequestParam(value = "merchantId") String merchantId) {
         CommonResponse<MerchantDTO> commonResponse = new CommonResponse<>();
         try {
@@ -196,7 +194,6 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
      * @return
      */
     @RequestMapping(value = "/merchant/getMerchants")
-    @AccessRequired
     public PageResponse<MerchantDTO> getMerchants(MerchantDTO merchantDTO,
                                                   @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                                   @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
@@ -301,7 +298,6 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
      * @param httpServletResponse
      */
     @PostMapping(value = "/merchant/export")
-    @AccessRequired
     public void exportProduct(@RequestBody MerchantDTO merchantDTO, HttpServletResponse httpServletResponse) {
         try {
             if (StringUtils.isEmpty(merchantDTO.getMerchantEnable())) {
