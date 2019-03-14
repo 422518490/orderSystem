@@ -5,7 +5,7 @@ import com.yaya.common.constant.MerchantEnableConstant;
 import com.yaya.common.constant.UserTypeConstant;
 import com.yaya.common.response.*;
 import com.yaya.common.util.*;
-import com.yaya.merchant.orderapi.PermissionInterface;
+import com.yaya.merchant.orderApi.PermissionInterface;
 import com.yaya.merchant.service.MerchantService;
 import com.yaya.merchant.template.MerchantExportResult;
 import com.yaya.orderApi.CurrentUserData;
