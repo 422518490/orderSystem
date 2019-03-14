@@ -9,3 +9,4 @@ target
 *.iml
 .idea
 .factorypath
+/project/一期/orderSystem/order-api/src/main/java/com/yaya/orderapi/uploadFileInterface/UploadFileControllerInterface.java
