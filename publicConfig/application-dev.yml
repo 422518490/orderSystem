@@ -1,0 +1,72 @@
+#test_application_name: {cipher}3a88e23a7df4332b5e0d7cb4ae4e119b2cda57861e7d827b74ace3ce32013a5a12ea4c961d7cb9182d54fabf669e4aec
+#test_application_address: cq2_application
+#test_application_version: dev2_application
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+spring:
+  datasource:
+    url: {cipher}edc13718ec154c84b8d061a1f2a181a96a00d862be4ab689a588056b99b5f6695589fd1eec10c3830cacd76b0fcf3cb402b8a7312cb8f6f834c10a45fd729f32a74d274a929285001af27ed25d15c0864efcf55db1ec832020416049f0858018
+    username: {cipher}b69478cd62edfbc06be69aafb7933fb24367d3ee0c6667d2fd70484a60f64097
+    password: {cipher}b69478cd62edfbc06be69aafb7933fb24367d3ee0c6667d2fd70484a60f64097
+    driver-class-name: com.mysql.jdbc.Driver
+    tomcat:
+      max-wait: 10000
+      max-active: 5
+      test-on-borrow: true
+    hikari:
+      #指定校验连接合法性执行的sql语句
+      connection-test-query: select 1
+      auto-commit: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    publisher-confirms: true
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: AUTO
+  redis:
+    host: localhost
+    port: 6379
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1
+    timeout: 5000
+    database: 4
+    #单位秒
+    keytimeout: 1000
+
+feign:
+  compression:
+    request:
+      #开启请求压缩功能
+      enabled: true
+      #指定压缩请求数据类型
+      mime-types: text/xml;application/xml;application/json
+      #如果传输超过该字节，就对其进行压缩
+      min-request-size: 2048
+    #开启响应压缩功能
+    response:
+      enabled: true
+
+mybatis:
+  mapper-locations: classpath:mappers/*.xml
+  config-location: classpath:page-config.xml
+
+
+#配置log日志,可改成logging.level.root=DEBUG 更为详细的日志
+logging:
+  level:
+    com:
+      yaya: DEBUG
+  path: /logs/
