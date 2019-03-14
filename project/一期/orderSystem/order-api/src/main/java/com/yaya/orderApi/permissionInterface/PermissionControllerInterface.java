@@ -1,9 +1,9 @@
-package com.yaya.orderapi.permissionInterface;
+package com.yaya.orderApi.permissionInterface;
 
 import com.yaya.common.response.BaseResponse;
 import com.yaya.common.response.MultiDataResponse;
 import com.yaya.common.response.PageResponse;
-import com.yaya.orderapi.permissionDTO.PermissionDTO;
+import com.yaya.orderApi.permissionDTO.PermissionDTO;
 import org.springframework.web.bind.annotation.*;
 
 /**

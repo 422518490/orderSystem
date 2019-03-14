@@ -1,4 +1,4 @@
-package com.yaya.orderapi.merchantModel;
+package com.yaya.orderApi.merchantModel;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

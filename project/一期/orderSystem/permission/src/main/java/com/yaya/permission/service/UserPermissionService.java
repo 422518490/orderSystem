@@ -1,8 +1,8 @@
 package com.yaya.permission.service;
 
 
-import com.yaya.orderapi.permissionDTO.UserPermissionDTO;
-import com.yaya.orderapi.permissionModel.UserPermission;
+import com.yaya.orderApi.permissionDTO.UserPermissionDTO;
+import com.yaya.orderApi.permissionModel.UserPermission;
 
 /**
  * @author liaoyubo

@@ -1,6 +1,6 @@
-package com.yaya.orderapi.operationLogDTO;
+package com.yaya.orderApi.operationLogDTO;
 
-import com.yaya.orderapi.operationLogModel.OperationLog;
+import com.yaya.orderApi.operationLogModel.OperationLog;
 import lombok.Data;
 
 /**

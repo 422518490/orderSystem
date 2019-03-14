@@ -1,6 +1,6 @@
 package com.yaya.permission.dao;
 
-import com.yaya.orderapi.permissionDTO.PermissionDTO;
+import com.yaya.orderApi.permissionDTO.PermissionDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

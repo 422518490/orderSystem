@@ -7,7 +7,7 @@ import com.yaya.common.response.CommonResponse;
 import com.yaya.common.response.PageResponse;
 import com.yaya.common.response.ResponseCode;
 import com.yaya.common.util.ExcelUtils;
-import com.yaya.orderapi.merchantDTO.MerchantDTO;
+import com.yaya.orderApi.merchantDTO.MerchantDTO;
 import com.yaya.product.constant.ProductEnableConstant;
 import com.yaya.product.dto.ProductDTO;
 import com.yaya.product.orderApi.MerchantInterface;

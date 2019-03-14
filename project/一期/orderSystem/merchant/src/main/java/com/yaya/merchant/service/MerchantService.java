@@ -2,7 +2,7 @@ package com.yaya.merchant.service;
 
 import com.github.pagehelper.PageInfo;
 import com.yaya.merchant.template.MerchantExportResult;
-import com.yaya.orderapi.merchantDTO.MerchantDTO;
+import com.yaya.orderApi.merchantDTO.MerchantDTO;
 
 import java.util.List;
 import java.util.Optional;

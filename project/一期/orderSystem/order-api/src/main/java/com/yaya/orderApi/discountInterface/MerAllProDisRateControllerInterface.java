@@ -1,4 +1,4 @@
-package com.yaya.orderapi.discountInterface;
+package com.yaya.orderApi.discountInterface;
 
 /**
  * @author liaoyubo

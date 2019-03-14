@@ -1,4 +1,4 @@
-package com.yaya.orderapi.permissionModel;
+package com.yaya.orderApi.permissionModel;
 
 import java.io.Serializable;
 import java.util.Date;

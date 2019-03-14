@@ -1,6 +1,6 @@
 package com.yaya.merchant.dao;
 
-import com.yaya.orderapi.merchantDTO.MerchantDTO;
+import com.yaya.orderApi.merchantDTO.MerchantDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

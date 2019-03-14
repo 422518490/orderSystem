@@ -1,6 +1,6 @@
-package com.yaya.orderapi.merchantDTO;
+package com.yaya.orderApi.merchantDTO;
 
-import com.yaya.orderapi.merchantModel.Merchant;
+import com.yaya.orderApi.merchantModel.Merchant;
 import lombok.Data;
 
 /**

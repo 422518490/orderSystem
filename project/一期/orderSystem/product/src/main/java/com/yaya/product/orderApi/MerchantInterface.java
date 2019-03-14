@@ -1,6 +1,6 @@
 package com.yaya.product.orderApi;
 
-import com.yaya.orderapi.merchantInterface.MerchantControllerInterface;
+import com.yaya.orderApi.merchantInterface.MerchantControllerInterface;
 import org.springframework.cloud.openfeign.FeignClient;
 
 /**

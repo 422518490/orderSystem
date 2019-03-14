@@ -1,7 +1,7 @@
-package com.yaya.orderapi.discountDTO;
+package com.yaya.orderApi.discountDTO;
 
 
-import com.yaya.orderapi.discountModel.MerchantPublicDiscountHistory;
+import com.yaya.orderApi.discountModel.MerchantPublicDiscountHistory;
 
 /**
  * @author liaoyubo

@@ -1,7 +1,7 @@
 package com.yaya.permission.service.impl;
 
-import com.yaya.orderapi.permissionDTO.UserPermissionDTO;
-import com.yaya.orderapi.permissionModel.UserPermission;
+import com.yaya.orderApi.permissionDTO.UserPermissionDTO;
+import com.yaya.orderApi.permissionModel.UserPermission;
 import com.yaya.permission.dao.UserPermissionMapperExt;
 import com.yaya.permission.service.UserPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;

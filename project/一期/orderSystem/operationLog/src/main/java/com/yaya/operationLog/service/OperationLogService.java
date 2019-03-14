@@ -1,7 +1,7 @@
 package com.yaya.operationLog.service;
 
 import com.github.pagehelper.PageInfo;
-import com.yaya.orderapi.operationLogDTO.OperationLogDTO;
+import com.yaya.orderApi.operationLogDTO.OperationLogDTO;
 
 /**
  * @author liaoyubo

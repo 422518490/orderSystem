@@ -4,7 +4,7 @@ package com.yaya.security.access;
 import com.alibaba.fastjson.JSONObject;
 import com.yaya.common.constant.PermissionUpdateNoticeConstant;
 import com.yaya.common.util.RedisUtil;
-import com.yaya.orderapi.CurrentUserData;
+import com.yaya.orderApi.CurrentUserData;
 import com.yaya.permission.service.PermissionService;
 import com.yaya.security.constant.AccessConstant;
 import lombok.extern.slf4j.Slf4j;

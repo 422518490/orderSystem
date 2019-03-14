@@ -35,7 +35,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.yaya.orderapi.OrderApiApp</mainClass>
+                            <mainClass>com.yaya.orderApi.OrderApiApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

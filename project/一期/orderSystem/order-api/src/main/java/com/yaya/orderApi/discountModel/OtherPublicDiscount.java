@@ -1,4 +1,4 @@
-package com.yaya.orderapi.discountModel;
+package com.yaya.orderApi.discountModel;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

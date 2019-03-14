@@ -5,7 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.yaya.common.util.DateUtils;
 import com.yaya.operationLog.dao.OperationLogMapper;
 import com.yaya.operationLog.service.OperationLogService;
-import com.yaya.orderapi.operationLogDTO.OperationLogDTO;
+import com.yaya.orderApi.operationLogDTO.OperationLogDTO;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
