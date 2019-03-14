@@ -1,0 +1,52 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: config_server
+  cloud:
+    config:
+      server:
+        git:
+          #服务的git仓库地址
+          uri: https://github.com/422518490/orderSystem
+          #配置文件所在的目录
+          search-paths: /publicConfig
+          #强制拉取
+          force-pull: true
+          #服务器获取文件后存放配置文件本地路径
+          basedir: /baseConfig/
+          #git仓库的用户名
+          #username:
+          #git仓库的密码
+          #password:
+          #启动的时候初始化配置信息
+          #clone-on-start: true
+        #启动加密
+        encrypt:
+          enabled: true
+        #用于自定义访问路径如加解密时的端点
+        prefix: config
+      #配置文件所在的分支
+      label: master
+    bus:
+      id: config_server_bus
+
+
+eureka:
+  client:
+    service-url:
+      #eureka地址
+      defaultZone: http://localhost:8010/eureka/
+
+#暴露的端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+#加密盐值
+encrypt:
+  key: 1234abcd-
+
