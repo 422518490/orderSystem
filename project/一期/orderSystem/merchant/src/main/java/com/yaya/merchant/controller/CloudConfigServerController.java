@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class CloudConfigServerController {
-    /*@Value("${test_name}")
+    @Value("${test_name}")
     private String name;
 
     @Value("${test_address}")
@@ -28,5 +28,5 @@ public class CloudConfigServerController {
     @RequestMapping("/test")
     public String test() {
         return "你好，我是" + name + ",年龄：" + address + "地址。当前环境：" + version + ";applicationName是:" + applicationName;
-    }*/
+    }
 }
