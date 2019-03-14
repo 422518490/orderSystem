@@ -1,4 +1,4 @@
-package com.yaya.merchant.orderApi;
+package com.yaya.merchant.orderapi;
 
 import com.yaya.orderApi.permissionInterface.PermissionControllerInterface;
 import org.springframework.cloud.openfeign.FeignClient;
