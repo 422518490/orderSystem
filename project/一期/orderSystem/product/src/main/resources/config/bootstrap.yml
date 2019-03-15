@@ -1,0 +1,34 @@
+
+server:
+  port: 8090
+
+spring:
+  application:
+    name: product
+  cloud:
+    config:
+      discovery:
+        #配置服务实例名称
+        service-id: config_server
+        #开启配置服务发现
+        enabled: true
+      #配置文件所在分支
+      label: master
+      #配置文件的开头名字
+      name: product
+      #配置文件的后面名字，如product-dev.properties
+      profile: dev
+      #配置服务中心
+      uri: http://localhost:8091/
+      #git仓库的用户名
+      #username:
+      #git仓库的密码
+      #password:
+    bus:
+      id: product_bus
+
+eureka:
+  client:
+    service-url:
+      #eureka地址
+      defaultZone: http://localhost:8010/eureka/

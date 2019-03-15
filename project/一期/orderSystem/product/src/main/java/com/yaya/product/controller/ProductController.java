@@ -13,7 +13,6 @@ import com.yaya.product.dto.ProductDTO;
 import com.yaya.product.orderApi.MerchantInterface;
 import com.yaya.product.service.ProductService;
 import com.yaya.product.template.ProductExportResult;
-import com.yaya.security.access.AccessRequired;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -45,7 +44,6 @@ public class ProductController {
      * @return
      */
     @PostMapping(value = "/product/addProduct")
-    @AccessRequired
     public BaseResponse addProduct(@RequestBody ProductDTO productDTO) {
         BaseResponse baseResponse = new BaseResponse();
         try {
@@ -174,7 +172,6 @@ public class ProductController {
      * @param httpServletResponse
      */
     @PostMapping(value = "/product/export")
-    @AccessRequired
     public void exportProduct(@RequestBody ProductDTO productDTO, HttpServletResponse httpServletResponse) {
         BaseResponse baseResponse = new BaseResponse();
         try {
@@ -210,7 +207,6 @@ public class ProductController {
      * @return
      */
     @DeleteMapping(value = "/product/deleteProduct")
-    @AccessRequired
     public BaseResponse deleteProduct(@RequestBody ProductDTO productDTO) {
         BaseResponse baseResponse = new BaseResponse();
         try {
@@ -257,7 +253,6 @@ public class ProductController {
      * @return
      */
     @PostMapping(value = "/product/updateProductPrice")
-    @AccessRequired
     public BaseResponse updateProductPrice(@RequestBody ProductDTO productDTO) {
         BaseResponse baseResponse = new BaseResponse();
         try {

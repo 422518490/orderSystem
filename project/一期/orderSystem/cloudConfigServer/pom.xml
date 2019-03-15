@@ -26,14 +26,18 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.yaya.cloudConfigServer.CloudConfigServerApp</mainClass>
-                        </manifest>
-                    </archive>
+                    <mainClass>com.yaya.cloudConfigServer.CloudConfigServerApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>
