@@ -19,7 +19,7 @@ spring:
       #配置文件的后面名字，如merchant-dev.properties
       profile: dev
       #配置服务中心
-      uri: http://localhost:8091/
+      #uri: http://localhost:8091/
       #git仓库的用户名
       #username:
       #git仓库的密码
