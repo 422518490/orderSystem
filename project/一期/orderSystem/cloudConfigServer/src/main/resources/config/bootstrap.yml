@@ -29,8 +29,6 @@ spring:
         prefix: config
       #配置文件所在的分支
       label: master
-    bus:
-      id: config_server_bus
 
 
 eureka:
@@ -44,7 +42,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: "*"
 
 #加密盐值
 encrypt:

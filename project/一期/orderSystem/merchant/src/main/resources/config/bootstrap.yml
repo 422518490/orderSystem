@@ -24,8 +24,6 @@ spring:
       #username:
       #git仓库的密码
       #password:
-    bus:
-      id: merchant_bus
 
 eureka:
   client:
@@ -38,4 +36,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: "*"
