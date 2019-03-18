@@ -8,7 +8,7 @@ management:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/orderSystem?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/orderSystem?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
     username: '{cipher}b69478cd62edfbc06be69aafb7933fb24367d3ee0c6667d2fd70484a60f64097'
     password: '{cipher}b69478cd62edfbc06be69aafb7933fb24367d3ee0c6667d2fd70484a60f64097'
     driver-class-name: com.mysql.jdbc.Driver
