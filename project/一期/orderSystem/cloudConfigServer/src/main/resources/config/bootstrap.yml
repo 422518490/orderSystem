@@ -29,9 +29,6 @@ spring:
         prefix: config
       #配置文件所在的分支
       label: master
-    bus:
-      refresh:
-        enabled: false
 
 
 eureka:
