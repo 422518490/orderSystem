@@ -1,6 +1,7 @@
 package com.yaya.product.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.my.boot.bean.MyService;
 import com.yaya.common.response.PageResponse;
 import com.yaya.common.response.ResponseCode;
 import com.yaya.common.util.ExcelUtils;
@@ -25,6 +26,9 @@ public class ProductPriceHistoryController {
 
     @Autowired
     private ProductPriceHistoryService productPriceHistoryService;
+
+    @Autowired
+    private MyService myService;
 
     /**
      * 分页获取商家的产品价格历史信息
@@ -73,5 +77,10 @@ public class ProductPriceHistoryController {
             log.error("导出商家产品信息错误:" + e);
             e.printStackTrace();
         }
+    }
+
+    @GetMapping("/testMyBoot")
+    public void testMyBoot(){
+        myService.print();
     }
 }

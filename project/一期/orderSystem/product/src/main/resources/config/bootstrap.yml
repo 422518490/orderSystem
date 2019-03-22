@@ -32,3 +32,7 @@ eureka:
     service-url:
       #eureka地址
       defaultZone: http://localhost:8010/eureka/
+com:
+  myboot:
+    name: liaoyubo
+    enable: true
