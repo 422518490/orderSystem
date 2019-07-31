@@ -15,7 +15,6 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
  */
 @SpringBootApplication
 @EnableConfigServer
-@EnableEurekaClient
 @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
 public class CloudConfigServerApp {
 

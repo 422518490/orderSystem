@@ -25,12 +25,12 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
-            <exclusions>
+            <!--<exclusions>
                 <exclusion>
                     <groupId>org.springframework.cloud</groupId>
                     <artifactId>spring-cloud-starter-config</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
         </dependency>
     </dependencies>
 

@@ -10,3 +10,8 @@
 - 1).由于版本原因，配置webhook后推送到本地不会主动刷新，需要手动调用/actuator/bus-refresh刷新配置缓存
 - 9.添加hystrix熔断器
 - 10.添加gateway
+- 11.新增redis bloom过滤器代码
+- 1).需要在Linux上安装Redisbloom，需要redis 4.0以上才支持插件模块，从wget https://github.com/RedisBloom/RedisBloom/archive/v2.0.0.tar.gz
+代码后，通过tar -zxvf RedisBloom-2.0.0.tar.gz解压，进入解压文件夹后执行make命令，然后在redis.conf配置文件加上
+loadmodule /usr/local/redis-5.0.5/modlues/RedisBloom-2.0.0/redisbloom.so
+后重启redis即可。

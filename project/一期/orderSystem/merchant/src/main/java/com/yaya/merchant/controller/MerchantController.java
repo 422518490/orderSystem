@@ -13,6 +13,7 @@ import com.yaya.orderApi.merchantDTO.MerchantDTO;
 import com.yaya.orderApi.merchantInterface.MerchantControllerInterface;
 import com.yaya.orderApi.uploadFileDTO.UploadFileDTO;
 import com.yaya.orderApi.uploadFileInterface.UploadFileControllerInterface;
+import io.rebloom.client.Client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -58,6 +60,9 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
 
     @Autowired
     private UploadFileUtil uploadFileUtil;
+
+    @Resource
+    private Client bloomClient;
 
     /**
      * 商家登陆

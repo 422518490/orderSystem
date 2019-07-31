@@ -13,11 +13,13 @@ import com.yaya.product.dto.ProductDTO;
 import com.yaya.product.orderApi.MerchantInterface;
 import com.yaya.product.service.ProductService;
 import com.yaya.product.template.ProductExportResult;
+import io.rebloom.client.Client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.*;
@@ -36,6 +38,9 @@ public class ProductController {
 
     @Autowired
     private MerchantInterface merchantInterface;
+
+    @Resource
+    private Client bloomClient;
 
     /**
      * 添加商家产品
@@ -68,7 +73,14 @@ public class ProductController {
                 return baseResponse;
             }
 
+            if (bloomClient.exists("product",productDTO.getProductName())){
+                baseResponse.setCode(ResponseCode.PARAMETER_ERROR);
+                baseResponse.setMsg("产品已经存在，不能重复添加");
+                return baseResponse;
+            }
+
             productService.addProduct(productDTO);
+            bloomClient.add("product",productDTO.getProductName());
             baseResponse.setCode(ResponseCode.SUCCESS);
             baseResponse.setMsg("新增产品成功");
         } catch (Exception e) {

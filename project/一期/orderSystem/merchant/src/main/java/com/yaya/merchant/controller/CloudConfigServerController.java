@@ -1,8 +1,11 @@
 package com.yaya.merchant.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.*;
 
 /**
  * @author liaoyubo
@@ -30,11 +33,4 @@ public class CloudConfigServerController {
         return "你好，我是" + name + ",年龄：" + address + "地址。当前环境：" + version + ";applicationName是:" + applicationName;
     }
 
-    public class ListNode {
-      int val;
-     ListNode next;
-     ListNode(int x) {
-         val = x;
-     }
-  }
 }

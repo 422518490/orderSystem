@@ -13,7 +13,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
  * @description
  */
 @SpringBootApplication
-@EnableEurekaClient
+//@EnableEurekaClient
 @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
 public class GatewayApp {
 
