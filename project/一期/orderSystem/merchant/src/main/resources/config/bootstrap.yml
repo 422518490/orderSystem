@@ -32,8 +32,10 @@ eureka:
       defaultZone: http://localhost:8010/eureka/
 
 #暴露的端点
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
+#management:
+ # endpoints:
+  #  web:
+   #   exposure:
+    #    include: '*'
+  #endpoint:
+   # shutdown: true

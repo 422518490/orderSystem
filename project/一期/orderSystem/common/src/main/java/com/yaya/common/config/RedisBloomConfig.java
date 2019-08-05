@@ -16,10 +16,10 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class RedisBloomConfig {
 
-    @Value("${redis.host}")
+    @Value("${spring.redis.host}")
     private String redisHost;
 
-    @Value("${redis.port}")
+    @Value("${spring.redis.port}")
     private Integer redisPort;
 
     @Bean
