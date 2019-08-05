@@ -15,4 +15,4 @@
 代码后，通过tar -zxvf RedisBloom-2.0.0.tar.gz解压，进入解压文件夹后执行make命令，然后在redis.conf配置文件加上
 loadmodule /usr/local/redis-5.0.5/modlues/RedisBloom-2.0.0/redisbloom.so
 后重启redis即可。
-12.merchant实现了优雅关闭程序，需要开启actuator的shutdown端点，通过/actuator/shutdown进行调用
+- 12.merchant实现了优雅关闭程序，需要开启actuator的shutdown端点，通过/actuator/shutdown进行调用
