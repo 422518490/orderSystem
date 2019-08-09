@@ -19,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -103,8 +104,16 @@ public class MerchantServiceImpl implements MerchantService {
         MerchantExample merchantExample = new MerchantExample();
         MerchantExample.Criteria criteria = merchantExample.createCriteria();
         criteria.andMerchantEnableEqualTo(merchantDTO.getMerchantEnable());
-        criteria.andMerchantAddressLike(merchantDTO.getMerchantAddress());
-        criteria.andMerchantNameLike(merchantDTO.getMerchantName());
+
+        String merchantAddress = merchantDTO.getMerchantAddress();
+        if (!StringUtils.isEmpty(merchantAddress)){
+            criteria.andMerchantAddressLike(merchantAddress);
+        }
+
+        String merchantName = merchantDTO.getMerchantName();
+        if (!StringUtils.isEmpty(merchantName)){
+            criteria.andMerchantNameLike(merchantName);
+        }
 
         List<Merchant> merchantList = merchantMapperExt.selectByExample(merchantExample);
         merchantList.stream().forEach(merchant -> {
