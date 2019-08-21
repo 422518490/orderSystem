@@ -26,6 +26,14 @@ spring:
       #password:
     bus:
       id: product_bus
+  boot:
+    admin:
+      client:
+        # admin服务注册地址
+        url: http://localhost:8095
+        instance:
+          service-url: http://localhost:8090
+
 
 eureka:
   client:

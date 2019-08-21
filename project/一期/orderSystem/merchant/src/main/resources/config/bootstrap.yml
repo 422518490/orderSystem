@@ -24,6 +24,14 @@ spring:
       #username:
       #git仓库的密码
       #password:
+  boot:
+    admin:
+      client:
+        instance:
+          # 用于客户端地址的跳转，如跳转到eureka
+          service-url: http://localhost:8010
+        url: http://localhost:8095
+
 
 eureka:
   client:

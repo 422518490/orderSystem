@@ -21,6 +21,6 @@ public class BloomInit {
    @PostConstruct
    public void  filterBloom(){
        // 初始化product的bloom过滤大小为1W数据，误判率为10%
-       bloomClient.createFilter("product",10000,0.1);
+       //bloomClient.createFilter("product",10000,0.1);
    }
 }

@@ -1,6 +1,6 @@
 
 server:
-  port: 8096
+  port: 8099
 
 spring:
   application:
@@ -26,6 +26,12 @@ spring:
       #password:
     bus:
       id: order_bus
+  boot:
+    admin:
+      client:
+        url: http://localhost:8095
+        instance:
+          service-url: http://localhost:8010
 
 eureka:
   client:
