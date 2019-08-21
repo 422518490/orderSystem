@@ -16,3 +16,4 @@
 loadmodule /usr/local/redis-5.0.5/modlues/RedisBloom-2.0.0/redisbloom.so
 后重启redis即可。
 - 12.merchant实现了优雅关闭程序，需要开启actuator的shutdown端点，通过/actuator/shutdown进行调用
+- 13.新增springboot admin模块，完成部分展示功能
