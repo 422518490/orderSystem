@@ -17,6 +17,9 @@ import com.yaya.orderApi.merchantModel.MerchantExample;
 import com.yaya.orderApi.operationLogInterface.OperationLogHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
@@ -41,6 +44,7 @@ public class MerchantServiceImpl implements MerchantService {
     private OperationLogHandler operationLogHandler;
 
     @Override
+    @Cacheable(cacheManager = "redisCacheManager", value = "merchant-r", key = "#merchantDTO.merchantLoginName")
     public Optional<MerchantDTO> loginByMerchantName(MerchantDTO merchantDTO) {
         merchantDTO = merchantMapperExt.loginByMerchantName(merchantDTO);
         Optional<MerchantDTO> merchantDTOOptional = Optional.ofNullable(merchantDTO);
@@ -79,13 +83,14 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
+    @Cacheable(cacheManager = "redisCacheManager", value = "merchant-r", key = "#merchantId")
     public Optional<MerchantDTO> getMerchantById(String merchantId) {
         Merchant merchant = merchantMapperExt.selectByPrimaryKey(merchantId);
 
         Optional<Merchant> merchantOptional = Optional.ofNullable(merchant);
         if (merchantOptional.isPresent()) {
             MerchantDTO merchantDTO = new MerchantDTO();
-            BeanUtils.copyProperties(merchant,merchantDTO);
+            BeanUtils.copyProperties(merchant, merchantDTO);
 
             merchantDTO.setCreateDateTimeStr(DateUtils.dateToStr(merchantDTO.getCreateTime(), DateUtils.DEFAULT_DATETIME_FORMAT));
             merchantDTO.setLastUpdateDateTimeStr(DateUtils.dateToStr(merchantDTO.getLastUpdateTime(), DateUtils.DEFAULT_DATETIME_FORMAT));
@@ -106,19 +111,19 @@ public class MerchantServiceImpl implements MerchantService {
         criteria.andMerchantEnableEqualTo(merchantDTO.getMerchantEnable());
 
         String merchantAddress = merchantDTO.getMerchantAddress();
-        if (!StringUtils.isEmpty(merchantAddress)){
+        if (!StringUtils.isEmpty(merchantAddress)) {
             criteria.andMerchantAddressLike(merchantAddress);
         }
 
         String merchantName = merchantDTO.getMerchantName();
-        if (!StringUtils.isEmpty(merchantName)){
+        if (!StringUtils.isEmpty(merchantName)) {
             criteria.andMerchantNameLike(merchantName);
         }
 
         List<Merchant> merchantList = merchantMapperExt.selectByExample(merchantExample);
         merchantList.stream().forEach(merchant -> {
             MerchantDTO mer = new MerchantDTO();
-            BeanUtils.copyProperties(merchant,mer);
+            BeanUtils.copyProperties(merchant, mer);
 
             mer.setCreateDateTimeStr(DateUtils.dateToStr(merchant.getCreateTime(), DateUtils.DEFAULT_DATETIME_FORMAT));
             mer.setLastUpdateDateTimeStr(DateUtils.dateToStr(merchant.getLastUpdateTime(), DateUtils.DEFAULT_DATETIME_FORMAT));
@@ -148,14 +153,19 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public void updateMerchant(MerchantDTO merchantDTO) {
+    @CachePut(cacheManager = "redisCacheManager", value = "merchant-r",
+            key = "#merchantDTO.merchantId", condition = "#result ne null")
+    public MerchantDTO updateMerchant(MerchantDTO merchantDTO) {
         merchantMapperExt.updateByPrimaryKeySelective(merchantDTO);
 
         //发送日志给rabbit mq
         operationLogHandler.sendOperationLog(OperationTypeConstant.REGISTER_MERCHANT, merchantDTO.getMerchantId(), merchantDTO.getMerchantId(), "更新商家信息");
+
+        return merchantDTO;
     }
 
     @Override
+    @CacheEvict(cacheManager = "redisCacheManager", value = "merchant-r", key = "#merchantDTO.merchantId")
     public void updateMerchantEnable(MerchantDTO merchantDTO) {
         merchantMapperExt.updateByPrimaryKeySelective(merchantDTO);
 

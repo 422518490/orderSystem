@@ -1,5 +1,6 @@
 package com.yaya.merchant.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.yaya.common.constant.MerchantEnableConstant;
 import com.yaya.common.constant.UserTypeConstant;
@@ -16,6 +17,9 @@ import com.yaya.orderApi.uploadFileInterface.UploadFileControllerInterface;
 import io.rebloom.client.Client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,7 +90,7 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
                 return commonResponse;
             }
 
-            merchantDTO = merchantDTOOptional.get();
+            merchantDTO = parseMerchantDTOOptional(merchantDTOOptional);
 
             String accessToken = AccessTokenUtil.createAccessToken(merchantDTO.getMerchantLoginName(), String.valueOf(System.currentTimeMillis()));
             response.setHeader("accessToken", accessToken);
@@ -156,20 +160,24 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
     public CommonResponse<MerchantDTO> getMerchant(@RequestParam(value = "merchantId") String merchantId) {
         CommonResponse<MerchantDTO> commonResponse = new CommonResponse<>();
         try {
+
             Optional<MerchantDTO> merchantDTOOptional = merchantService.getMerchantById(merchantId);
             if (!merchantDTOOptional.isPresent()) {
                 commonResponse.setCode(ResponseCode.PARAMETER_ERROR);
                 commonResponse.setMsg("商家不存在");
                 return commonResponse;
             }
-            if (!UserTypeConstant.MERCHANT_TYPE.equals(merchantDTOOptional.get().getUserType())) {
+
+            MerchantDTO merchantDTO = parseMerchantDTOOptional(merchantDTOOptional);
+
+            if (!UserTypeConstant.MERCHANT_TYPE.equals(merchantDTO.getUserType())) {
                 commonResponse.setCode(ResponseCode.PARAMETER_ERROR);
                 commonResponse.setMsg("非商家用户不许查询");
                 return commonResponse;
             }
             commonResponse.setCode(ResponseCode.SUCCESS);
             commonResponse.setMsg("获取商家信息成功");
-            commonResponse.setData(merchantDTOOptional.get());
+            commonResponse.setData(merchantDTO);
         } catch (Exception e) {
             commonResponse.setCode(ResponseCode.SERVER_ERROR);
             commonResponse.setMsg("服务器错误");
@@ -187,7 +195,8 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
     @Override
     public Optional<MerchantDTO> getMerchantToInternalUse(@RequestParam(value = "merchantId") String merchantId) {
         Optional<MerchantDTO> merchantDTOOptional = merchantService.getMerchantById(merchantId);
-        return merchantDTOOptional;
+        MerchantDTO merchantDTO = parseMerchantDTOOptional(merchantDTOOptional);
+        return Optional.ofNullable(merchantDTO);
     }
 
     /**
@@ -252,7 +261,7 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
      * @param merchantDTO
      * @return
      */
-    @PostMapping(value = "/merchant/updateMerchant")
+    @PutMapping(value = "/merchant/updateMerchant")
     public BaseResponse updateMerchant(@RequestBody MerchantDTO merchantDTO) {
         BaseResponse baseResponse = new BaseResponse();
         Map<String, String> errMap = new HashMap<>();
@@ -270,7 +279,9 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
                 return baseResponse;
             }
 
-            if (!merchantDTOOptional.get().getMerchantAddress().equals(merchantDTO.getMerchantAddress())) {
+            MerchantDTO merchant = parseMerchantDTOOptional(merchantDTOOptional);
+
+            if (!merchant.getMerchantAddress().equals(merchantDTO.getMerchantAddress())) {
                 //验证商家地址
                 int validateReturnCode = ValidatorUtil.validParameterAlert(merchantDTO.getMerchantAddress(), "商家地址", true, 1, 150, 4, errMap);
                 if (validateReturnCode != 0) {
@@ -285,6 +296,26 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
                     return baseResponse;
                 }
             }
+
+            String merchantLoginNameOld = merchant.getMerchantLoginName();
+            String merchantLoginNameNew = merchantDTO.getMerchantLoginName();
+
+            if (!StringUtils.isEmpty(merchantLoginNameOld)
+                    && !StringUtils.isEmpty(merchantLoginNameNew)){
+                if (merchantLoginNameOld.equals(merchantLoginNameNew)){
+                    merchantDTO.setMerchantLoginName(null);
+                }else {
+                    Optional<MerchantDTO> merchantDTOOpt = merchantService.loginByMerchantName(merchantDTO);
+                    if (merchantDTOOpt.isPresent()){
+                        baseResponse.setCode(ResponseCode.PARAMETER_ERROR);
+                        errMap.put("merchantLoginName", "登录名已存在");
+                        baseResponse.setErrorMap(errMap);
+                        return baseResponse;
+                    }
+                }
+
+            }
+
             merchantService.updateMerchant(merchantDTO);
             baseResponse.setCode(ResponseCode.SUCCESS);
             baseResponse.setMsg("更新商家信息成功");
@@ -401,22 +432,24 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
             return errMap;
         }
 
-        if (!UserTypeConstant.MERCHANT_TYPE.equals(merchantDTOOptional.get().getUserType())) {
+        MerchantDTO merchantDTO = parseMerchantDTOOptional(merchantDTOOptional);
+
+        if (!UserTypeConstant.MERCHANT_TYPE.equals(merchantDTO.getUserType())) {
             errMap.put("userType", "非商家用户不许登陆");
             return errMap;
         }
 
         merchantPassword = RSAUtils.decodePwd(merchantPassword);
         // 验证密码是否正确
-        String salt = merchantDTOOptional.get().getSalt();
+        String salt = merchantDTO.getSalt();
         String encodePassword = DigestUtils.md5DigestAsHex((merchantPassword + salt).getBytes());
 
-        if (!merchantDTOOptional.get().getMerchantPassword().equals(encodePassword)) {
+        if (!merchantDTO.getMerchantPassword().equals(encodePassword)) {
             errMap.put("merchantPassword", "商家登陆名或密码错误");
             return errMap;
         }
 
-        if (MerchantEnableConstant.MERCHANT_DISABLE.equals(merchantDTOOptional.get().getMerchantEnable())) {
+        if (MerchantEnableConstant.MERCHANT_DISABLE.equals(merchantDTO.getMerchantEnable())) {
             errMap.put("merchantEnable", "商家已经失效");
         }
         return errMap;
@@ -484,6 +517,21 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
             errorMap.put("merchantBusinessLicense", "商家营业执照编码不能为空");
         }
         return errorMap;
+    }
+
+    /**
+     * 通过redis缓存读取数据时的转换需要
+     * @param merchantDTOOptional
+     * @return
+     */
+    private MerchantDTO parseMerchantDTOOptional(Optional<MerchantDTO> merchantDTOOptional){
+        MerchantDTO merchantDTO ;
+        if (LinkedHashMap.class.isInstance(merchantDTOOptional.get())){
+            merchantDTO = JSON.parseObject(JSON.toJSON(merchantDTOOptional.get()).toString(),MerchantDTO.class);
+        }else {
+            merchantDTO = merchantDTOOptional.get();
+        }
+        return merchantDTO;
     }
 
 }

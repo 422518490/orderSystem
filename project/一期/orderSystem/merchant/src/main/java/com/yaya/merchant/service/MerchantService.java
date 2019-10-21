@@ -56,7 +56,7 @@ public interface MerchantService {
      * 更新商家信息
      * @param merchantDTO
      */
-    void updateMerchant(MerchantDTO merchantDTO);
+    MerchantDTO updateMerchant(MerchantDTO merchantDTO);
 
     /**
      * 更新商家可用状态
