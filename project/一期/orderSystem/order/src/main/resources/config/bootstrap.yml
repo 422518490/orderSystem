@@ -38,3 +38,8 @@ eureka:
     service-url:
       #eureka地址
       defaultZone: http://localhost:8010/eureka/
+
+listener:
+  redis:
+    #1表示redis的db1,针对单机
+    order_topic_expired: __keyevent@1__:expired
