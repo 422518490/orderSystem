@@ -92,8 +92,8 @@ public class RedisConfig extends CachingConfigurerSupport {
     }
 
     @Bean
-    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {
-        StringRedisTemplate template = new StringRedisTemplate(factory);
+    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        StringRedisTemplate template = new StringRedisTemplate(redisConnectionFactory);
         // 设置序列化工具，这样ReportBean不需要实现Serializable接口
         setSerializer(template);
         template.afterPropertiesSet();
@@ -112,9 +112,9 @@ public class RedisConfig extends CachingConfigurerSupport {
     }
 
     @Bean
-    public RedisCacheManager redisCacheManager(RedisConnectionFactory factory,
+    public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory,
                                                RedisCacheConfiguration redisCacheConfiguration){
-        RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(factory);
+        RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory);
         RedisCacheManager redisCacheManager = new RedisCacheManager(redisCacheWriter,redisCacheConfiguration);
         return redisCacheManager;
     }
