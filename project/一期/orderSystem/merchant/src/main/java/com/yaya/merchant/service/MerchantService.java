@@ -3,6 +3,10 @@ package com.yaya.merchant.service;
 import com.github.pagehelper.PageInfo;
 import com.yaya.merchant.template.MerchantExportResult;
 import com.yaya.orderApi.merchantDTO.MerchantDTO;
+import com.yaya.orderApi.merchantModel.Merchant;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.GeoResults;
+import org.springframework.data.geo.Point;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +20,7 @@ public interface MerchantService {
 
     /**
      * 根据商家登陆获取商家信息
+     *
      * @param merchantDTO
      * @return
      */
@@ -23,6 +28,7 @@ public interface MerchantService {
 
     /**
      * 商家注册
+     *
      * @param merchantDTO
      * @return
      */
@@ -30,6 +36,7 @@ public interface MerchantService {
 
     /**
      * 根据merchantId获取商家信息
+     *
      * @param merchantId
      * @return
      */
@@ -37,6 +44,7 @@ public interface MerchantService {
 
     /**
      * 获取所有商家信息
+     *
      * @param merchantDTO
      * @param pageNum
      * @param pageSize
@@ -46,6 +54,7 @@ public interface MerchantService {
 
     /**
      * 导出商家信息
+     *
      * @param merchantDTO
      * @param pageSize
      * @return
@@ -54,13 +63,21 @@ public interface MerchantService {
 
     /**
      * 更新商家信息
+     *
      * @param merchantDTO
+     * @return
      */
     MerchantDTO updateMerchant(MerchantDTO merchantDTO);
 
     /**
      * 更新商家可用状态
+     *
      * @param merchantDTO
      */
     void updateMerchantEnable(MerchantDTO merchantDTO);
+
+
+    GeoResults findByLocationNear(double lon,
+                                  double lat,
+                                  double distance);
 }

@@ -2,6 +2,10 @@ package com.yaya.merchant.dao;
 
 import com.yaya.orderApi.merchantDTO.MerchantDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Point;
+
+import java.util.List;
 
 /**
  * @author liaoyubo
@@ -18,4 +22,6 @@ public interface MerchantMapperExt extends MerchantMapper{
      * @return
      */
     MerchantDTO loginByMerchantName(MerchantDTO merchantDTO);
+
+    List<MerchantDTO> findByLocationNear(Point point, Distance distance);
 }

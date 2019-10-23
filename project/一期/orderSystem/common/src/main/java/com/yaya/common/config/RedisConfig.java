@@ -3,6 +3,7 @@ package com.yaya.common.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yaya.common.setting.RedisSetting;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
@@ -12,6 +13,8 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
@@ -19,6 +22,7 @@ import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import javax.annotation.Resource;
 import java.time.Duration;
 
 /**
@@ -73,6 +77,17 @@ public class RedisConfig extends CachingConfigurerSupport {
             return sb.toString();
         };
     }
+
+    /*@Bean
+    public LettuceConnectionFactory connectionFactory(){
+        LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory();
+        RedisStandaloneConfiguration standaloneConfiguration = connectionFactory.getStandaloneConfiguration();
+        standaloneConfiguration.setHostName(redisSetting.getHost());
+        standaloneConfiguration.setPort(redisSetting.getPort());
+        standaloneConfiguration.setPassword(redisSetting.getPassword());
+        standaloneConfiguration.setDatabase(redisSetting.getDataBase());
+        return connectionFactory;
+    }*/
 
     /**
      * 设置redis 缓存时间 5 分钟

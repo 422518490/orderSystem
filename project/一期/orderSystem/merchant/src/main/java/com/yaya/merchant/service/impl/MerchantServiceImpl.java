@@ -10,6 +10,7 @@ import com.yaya.common.util.SaltUtil;
 import com.yaya.common.util.UUIDUtil;
 import com.yaya.merchant.dao.MerchantMapperExt;
 import com.yaya.merchant.service.MerchantService;
+import com.yaya.merchant.setting.MerchantRedisSetting;
 import com.yaya.merchant.template.MerchantExportResult;
 import com.yaya.orderApi.merchantDTO.MerchantDTO;
 import com.yaya.orderApi.merchantModel.Merchant;
@@ -20,10 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.geo.*;
+import org.springframework.data.redis.connection.RedisGeoCommands;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,11 +42,17 @@ import java.util.Optional;
 @Service
 public class MerchantServiceImpl implements MerchantService {
 
-    @Autowired
+    @Resource
     private MerchantMapperExt merchantMapperExt;
 
     @Autowired
     private OperationLogHandler operationLogHandler;
+
+    @Resource
+    private RedisTemplate redisTemplate;
+
+    @Resource
+    private MerchantRedisSetting merchantRedisSetting;
 
     @Override
     @Cacheable(cacheManager = "redisCacheManager", value = "merchant-r", key = "#merchantDTO.merchantLoginName")
@@ -79,6 +90,12 @@ public class MerchantServiceImpl implements MerchantService {
 
         // 发送日志给rabbit mq
         operationLogHandler.sendOperationLog(OperationTypeConstant.REGISTER_MERCHANT, uuid, uuid, "商家注册");
+
+        // 存储redis位置信息
+        Point point = new Point(Double.parseDouble(merchantDTO.getMerchantLongitude() + ""),
+                Double.parseDouble(merchantDTO.getMerchantLatitude() + ""));
+        redisTemplate.opsForGeo().add(merchantRedisSetting.getMerchantLac(), point, merchantDTO.getMerchantId());
+
         return merchantDTO;
     }
 
@@ -89,11 +106,7 @@ public class MerchantServiceImpl implements MerchantService {
 
         Optional<Merchant> merchantOptional = Optional.ofNullable(merchant);
         if (merchantOptional.isPresent()) {
-            MerchantDTO merchantDTO = new MerchantDTO();
-            BeanUtils.copyProperties(merchant, merchantDTO);
-
-            merchantDTO.setCreateDateTimeStr(DateUtils.dateToStr(merchantDTO.getCreateTime(), DateUtils.DEFAULT_DATETIME_FORMAT));
-            merchantDTO.setLastUpdateDateTimeStr(DateUtils.dateToStr(merchantDTO.getLastUpdateTime(), DateUtils.DEFAULT_DATETIME_FORMAT));
+            MerchantDTO merchantDTO = transform(merchant);
 
             return Optional.ofNullable(merchantDTO);
         }
@@ -122,11 +135,7 @@ public class MerchantServiceImpl implements MerchantService {
 
         List<Merchant> merchantList = merchantMapperExt.selectByExample(merchantExample);
         merchantList.stream().forEach(merchant -> {
-            MerchantDTO mer = new MerchantDTO();
-            BeanUtils.copyProperties(merchant, mer);
-
-            mer.setCreateDateTimeStr(DateUtils.dateToStr(merchant.getCreateTime(), DateUtils.DEFAULT_DATETIME_FORMAT));
-            mer.setLastUpdateDateTimeStr(DateUtils.dateToStr(merchant.getLastUpdateTime(), DateUtils.DEFAULT_DATETIME_FORMAT));
+            MerchantDTO mer = transform(merchant);
             merchantDTOList.add(mer);
         });
         return new PageInfo<>(merchantDTOList);
@@ -171,5 +180,39 @@ public class MerchantServiceImpl implements MerchantService {
 
         //发送日志给rabbit mq
         operationLogHandler.sendOperationLog(OperationTypeConstant.UPDATE_MERCHANT_ENABLE, merchantDTO.getMerchantId(), merchantDTO.getMerchantId(), "更新商家是否可用状态:" + merchantDTO.getMerchantEnable());
+    }
+
+    @Override
+    public GeoResults findByLocationNear(double lon,
+                                         double lat,
+                                         double distanceUnit) {
+        // 当前经纬度
+        Point point = new Point(lon, lat);
+        // 距离的单位
+        Metric m = RedisGeoCommands.DistanceUnit.KILOMETERS;
+        Distance distance = new Distance(distanceUnit, m);
+        Circle circle = new Circle(point, distance);
+        // 附加参数
+        RedisGeoCommands.GeoRadiusCommandArgs args = RedisGeoCommands.GeoRadiusCommandArgs.newGeoRadiusArgs();
+        // 添加距离展示
+        args.includeDistance();
+        // 添加经纬度展示
+        args.includeCoordinates();
+        // 返回查询数量
+        args.limit(10);
+        // 排序方式
+        args.sortDescending();
+        GeoResults radius = redisTemplate.opsForGeo().radius(merchantRedisSetting.getMerchantLac(), circle, args);
+        return radius;
+    }
+
+    private MerchantDTO transform(Merchant merchant) {
+        MerchantDTO merchantDTO = new MerchantDTO();
+        BeanUtils.copyProperties(merchant, merchantDTO);
+
+        merchantDTO.setCreateDateTimeStr(DateUtils.dateToStr(merchant.getCreateTime(), DateUtils.DEFAULT_DATETIME_FORMAT));
+        merchantDTO.setLastUpdateDateTimeStr(DateUtils.dateToStr(merchant.getLastUpdateTime(), DateUtils.DEFAULT_DATETIME_FORMAT));
+
+        return merchantDTO;
     }
 }

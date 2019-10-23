@@ -47,3 +47,9 @@ eureka:
     #    include: '*'
   #endpoint:
    # shutdown: true
+
+merchant:
+  redis:
+    geo:
+      # redis存储merchant坐标
+      merchant-loc: merchantLoc

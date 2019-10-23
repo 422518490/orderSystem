@@ -8,6 +8,7 @@ import com.yaya.common.response.*;
 import com.yaya.common.util.*;
 import com.yaya.merchant.orderApi.PermissionInterface;
 import com.yaya.merchant.service.MerchantService;
+import com.yaya.merchant.setting.MerchantRedisSetting;
 import com.yaya.merchant.template.MerchantExportResult;
 import com.yaya.orderApi.CurrentUserData;
 import com.yaya.orderApi.merchantDTO.MerchantDTO;
@@ -20,6 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.GeoResults;
+import org.springframework.data.geo.Point;
+import org.springframework.data.redis.connection.RedisGeoCommands;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +73,12 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
 
     @Resource
     private Client bloomClient;
+
+    @Resource
+    private RedisTemplate redisTemplate;
+
+    @Resource
+    private MerchantRedisSetting merchantRedisSetting;
 
     /**
      * 商家登陆
@@ -175,6 +187,13 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
                 commonResponse.setMsg("非商家用户不许查询");
                 return commonResponse;
             }
+
+            // 存储redis位置信息
+            Point point = new Point(Double.parseDouble(merchantDTO.getMerchantLongitude() + ""),
+                    Double.parseDouble(merchantDTO.getMerchantLatitude() + ""));
+            redisTemplate.opsForGeo().add(merchantRedisSetting.getMerchantLac(),
+                    new RedisGeoCommands.GeoLocation(merchantDTO.getMerchantId(),point));
+
             commonResponse.setCode(ResponseCode.SUCCESS);
             commonResponse.setMsg("获取商家信息成功");
             commonResponse.setData(merchantDTO);
@@ -401,6 +420,16 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
         return response;
     }
 
+    @GetMapping(value = "/merchant/near")
+    public MultiDataResponse getNearMerchant(@RequestParam(value = "lon")double lon,
+                                             @RequestParam(value = "lat")double lat,
+                                             @RequestParam(value = "distance")double distance){
+        MultiDataResponse multiDataResponse = new MultiDataResponse();
+        GeoResults geoResults = merchantService.findByLocationNear(lon,lat,distance);
+        multiDataResponse.setData(geoResults.getContent());
+        return multiDataResponse;
+    }
+
     private void getLatLng(MerchantDTO merchantDTO, Map<String, String> map) {
         //判断传过来的定位经纬度是否为空，为空需要根据商家地址去转换
         if (!Optional.ofNullable(merchantDTO.getMerchantLatitude()).isPresent()
@@ -472,6 +501,11 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
         if (validateReturnCode != 0) {
             errorMap.put("merchantLoginName", errorMap.get("商家登陆名"));
             errorMap.remove(errorMap.get("商家登陆名"));
+        }
+
+        Optional<MerchantDTO> merchantDTOOptional = merchantService.loginByMerchantName(merchantDTO);
+        if (merchantDTOOptional.isPresent()){
+            errorMap.put("merchantLoginName", "商家登录名重复");
         }
 
         // 验证商家名字
