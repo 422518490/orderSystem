@@ -31,8 +31,9 @@ spring:
       simple:
         acknowledge-mode: AUTO
   redis:
-    host: localhost
-    port: 6379
+    host: 172.19.3.158
+    port: 7379
+	password: cmiot10086
     jedis:
       pool:
         max-idle: 8
