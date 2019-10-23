@@ -33,7 +33,7 @@ spring:
   redis:
     host: 172.19.3.158
     port: 7379
-	password: cmiot10086
+    password: cmiot10086
     jedis:
       pool:
         max-idle: 8
