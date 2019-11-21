@@ -33,10 +33,12 @@ spring:
   redis:
     #host: localhost
     #port: 7379
-     # master: 172.19.3.157:26389
-      #nodes:
-       # - 172.19.3.158:26389
-        #- 172.19.3.159:26389
+    # 这个名称一定与sentinel.conf文件中的sentinel monitor mymaster 172.168.1.3 6380 2名字相同
+	master: mymaster
+	  nodes:
+		- 172.19.3.157:26389
+	    - 172.19.3.158:26389
+	    - 172.19.3.159:26389
     jedis:
       pool:
         max-idle: 8
@@ -44,7 +46,7 @@ spring:
         max-active: 8
         max-wait: -1
     timeout: 5000
-    database: 4
+    database: 5
     #单位秒
     keytimeout: 1000
 
