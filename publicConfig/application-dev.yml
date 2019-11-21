@@ -31,8 +31,13 @@ spring:
       simple:
         acknowledge-mode: AUTO
   redis:
-    host: localhost
-    port: 7379
+    #host: localhost
+    #port: 7379
+	sentinel:
+      master: 172.19.3.157:26389
+      nodes:
+        - 172.19.3.158:26389
+        - 172.19.3.159:26389
     jedis:
       pool:
         max-idle: 8
