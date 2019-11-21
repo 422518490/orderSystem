@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RefreshScope
 public class CloudConfigServer2Controller {
-@Value("${test_name}")
+/*@Value("${test_name}")
 private String name;
 
 @Value("${test_address}")
@@ -30,5 +30,5 @@ private String applicationName;
 @RequestMapping("/per/test")
 public String test(){
     return "你好，我是"+name+",年龄："+address+"地址。当前环境："+version +";applicationName是:" + applicationName;
-}
+}*/
 }

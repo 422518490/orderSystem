@@ -16,15 +16,15 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class RedisBloomConfig {
 
-    @Value("${spring.redis.host}")
+    /*@Value("${spring.redis.host}")
     private String redisHost;
 
     @Value("${spring.redis.port}")
-    private Integer redisPort;
+    private Integer redisPort;*/
 
     @Bean
     public Client bloomClient(){
-        Client client = new Client(redisHost,redisPort);
+        Client client = new Client("localhost",6379);
         return client;
     }
 }

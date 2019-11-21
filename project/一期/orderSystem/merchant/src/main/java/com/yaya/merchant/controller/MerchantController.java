@@ -106,6 +106,7 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
 
             String accessToken = AccessTokenUtil.createAccessToken(merchantDTO.getMerchantLoginName(), String.valueOf(System.currentTimeMillis()));
             response.setHeader("accessToken", accessToken);
+            redisUtil.set("testsentinel","456");
             List<String> methodNameList = permissionInterface.getMethodNameByType(merchantDTO.getUserType()).getData();
             Long invalid = Long.parseLong(setSelfRedis.getSessionInvalid()) * 60;
 

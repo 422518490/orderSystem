@@ -31,7 +31,16 @@ spring:
           # 用于客户端地址的跳转，如跳转到eureka
           service-url: http://localhost:8010
         url: http://localhost:8095
-
+  #redis:
+    #sentinel:
+      # 这个名称一定与sentinel.conf文件中的sentinel monitor mymaster 172.168.1.3 6380 2名字相同
+      #master: mymaster
+      #nodes:
+       # - 172.193.32.157:26389
+        #- 172.193.32.158:26389
+        #- 172.193.32.159:26389
+    #host: 172.193.32.157
+    #port: 6389
 
 eureka:
   client:
