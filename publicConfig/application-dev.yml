@@ -31,15 +31,15 @@ spring:
       simple:
         acknowledge-mode: AUTO
   redis:
-    #host: localhost
-    #port: 7379
-	sentinel:
-    # 这个名称一定与sentinel.conf文件中的sentinel monitor mymaster 172.168.1.3 6380 2名字相同
-	  master: mymaster
-	    nodes:
-		  - 172.19.3.157:26389
-	      - 172.19.3.158:26389
-	      - 172.19.3.159:26389
+    sentinel:
+      # 这个名称一定与sentinel.conf文件中的sentinel monitor mymaster 172.168.1.3 6380 2名字相同
+      master: mymaster
+      nodes:
+        - 172.19.3.157:26389
+        - 172.19.3.158:26389
+        - 172.19.3.159:26389
+    #host: 172.19.3.157
+    #port: 6389
     jedis:
       pool:
         max-idle: 8
