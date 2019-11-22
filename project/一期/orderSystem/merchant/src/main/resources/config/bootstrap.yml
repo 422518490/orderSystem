@@ -57,8 +57,20 @@ eureka:
   #endpoint:
    # shutdown: true
 
+redis:
+    bloom:
+      nodes:
+        - "172.19.3.157:26389"
+        - "172.19.3.158:26389"
+        - "172.19.3.159:26389"
+
 merchant:
   redis:
     geo:
       # redis存储merchant坐标
       merchant-loc: merchantLoc
+
+listener:
+  redis:
+    #5表示redis的db5
+    merchant_topic_expired: __keyevent@5__:expired

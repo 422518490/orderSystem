@@ -26,13 +26,13 @@ spring:
       #password:
     bus:
       id: permission_bus
-    redis:
-      sentinel:
-        master: mymaster
-        nodes:
-          - 172.19.3.157:26389
-          - 172.19.3.158:26389
-          - 172.19.3.159:26389
+
+redis:
+  bloom:
+    nodes:
+    - 172.19.3.157:26389
+    - 172.19.3.158:26389
+    - 172.19.3.159:26389
 
 eureka:
   client:
