@@ -58,7 +58,7 @@ spring:
         max-active: 8
         max-wait: -1
     timeout: 5000
-    database: 5
+    database: 0
     #单位秒
     keytimeout: 1000
 
