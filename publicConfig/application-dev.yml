@@ -39,6 +39,7 @@ spring:
         #- 172.193.32.158:26389
         #- 172.193.32.159:26389
     cluster:
+      max-redirects: 3
       nodes:
         - 172.19.3.157:6359
         - 172.19.3.157:6360
@@ -50,7 +51,7 @@ spring:
         - 172.19.3.159:6360
     #host: 172.193.32.157
     #port: 6389
-    jedis:
+    lettuce:
       pool:
         max-idle: 8
         min-idle: 0
