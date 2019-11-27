@@ -20,3 +20,4 @@ loadmodule /usr/local/redis-5.0.5/modlues/RedisBloom-2.0.0/redisbloom.so
 - 14.merchant模块新增@RedisCacheManager自动缓存信息
 -15.merchant模块新增根据经纬度查询附近商家功能
 -16.redis哨兵机制的验证
+-17.新增redis cluster集群下key过期监控信息
