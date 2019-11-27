@@ -140,7 +140,10 @@ public class RedisConfig extends CachingConfigurerSupport {
 
         List<String> clusterNodes = redisProperties.getCluster().getNodes();
         Set<RedisNode> nodes = new HashSet();
-        clusterNodes.forEach(address -> nodes.add(new RedisNode(address.split(":")[0].trim(), Integer.valueOf(address.split(":")[1]))));
+        clusterNodes.forEach(address -> {
+            String[] ipPort = address.split(":");
+            nodes.add(new RedisNode(ipPort[0].trim(), Integer.valueOf(ipPort[1])));
+        });
 
         RedisClusterConfiguration clusterConfiguration = new RedisClusterConfiguration();
         clusterConfiguration.setClusterNodes(nodes);
