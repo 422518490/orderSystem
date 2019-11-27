@@ -86,3 +86,9 @@ logging:
     com:
       yaya: DEBUG
   path: /logs/
+  
+#redis cluster 集群定时刷新的间隔时间
+redis:
+  cluster:
+    refresh:
+      scheduled: 0/5 * * * * ?
