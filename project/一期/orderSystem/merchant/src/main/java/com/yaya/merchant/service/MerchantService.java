@@ -24,7 +24,7 @@ public interface MerchantService {
      * @param merchantDTO
      * @return
      */
-    Optional<MerchantDTO> loginByMerchantName(MerchantDTO merchantDTO);
+    MerchantDTO loginByMerchantName(MerchantDTO merchantDTO);
 
     /**
      * 商家注册
@@ -40,7 +40,7 @@ public interface MerchantService {
      * @param merchantId
      * @return
      */
-    Optional<MerchantDTO> getMerchantById(String merchantId);
+    MerchantDTO getMerchantById(String merchantId);
 
     /**
      * 获取所有商家信息

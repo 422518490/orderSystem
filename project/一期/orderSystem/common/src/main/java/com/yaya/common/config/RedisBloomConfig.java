@@ -3,6 +3,7 @@ package com.yaya.common.config;
 import io.rebloom.client.Client;
 import io.rebloom.client.ClusterClient;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +30,6 @@ public class RedisBloomConfig {
     @Value("${spring.redis.port}")
     private Integer redisPort;*/
 
-    //@Value("${spring.redis.sentinel.nodes}")
-    //@Value("${redis.bloom.nodes}")
     private List<String> nodes;
 
     @Bean
@@ -42,11 +41,16 @@ public class RedisBloomConfig {
     @Bean
     public ClusterClient bloomClusterClient() {
         Set<HostAndPort> jedisClusterNodes = new HashSet();
-        /*nodes.forEach(node ->{
-            String [] nd = node.toString().split(":");
+        nodes.forEach(node ->{
+            String [] nd = node.split(":");
             jedisClusterNodes.add(new HostAndPort(nd[0],Integer.parseInt(nd[1])));
-        });*/
+        });
         ClusterClient clusterClient = new ClusterClient(jedisClusterNodes);
+        // 商家登录名的容错率，如果需要更新容错率，只有先删除，或者使用另外的key
+        Boolean exists = clusterClient.exists("merchantLoginName");
+        if (!exists){
+            clusterClient.createFilter("merchantLoginName",10000, 0.0001);
+        }
         return clusterClient;
     }
 }

@@ -16,6 +16,7 @@ import com.yaya.orderApi.merchantInterface.MerchantControllerInterface;
 import com.yaya.orderApi.uploadFileDTO.UploadFileDTO;
 import com.yaya.orderApi.uploadFileInterface.UploadFileControllerInterface;
 import io.rebloom.client.Client;
+import io.rebloom.client.ClusterClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -75,6 +76,9 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
     private Client bloomClient;
 
     @Resource
+    private ClusterClient clusterClient;
+
+    @Resource
     private RedisTemplate redisTemplate;
 
     @Resource
@@ -93,8 +97,8 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
                                                      HttpServletResponse response) {
         CommonResponse<MerchantDTO> commonResponse = new CommonResponse<>();
         try {
-            Optional<MerchantDTO> merchantDTOOptional = merchantService.loginByMerchantName(merchantDTO);
-            Map<String, String> errorMap = validateLogin(merchantDTOOptional, merchantDTO.getMerchantPassword());
+            MerchantDTO merchant = merchantService.loginByMerchantName(merchantDTO);
+            Map<String, String> errorMap = validateLogin(merchant, merchantDTO.getMerchantPassword());
             // 判断是否有错误信息
             if (errorMap.size() > 0) {
                 commonResponse.setCode(ResponseCode.PARAMETER_ERROR);
@@ -102,12 +106,12 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
                 return commonResponse;
             }
 
-            merchantDTO = parseMerchantDTOOptional(merchantDTOOptional);
+            merchantDTO = parseCacheMerchantDTO(merchant);
 
             String accessToken = AccessTokenUtil.createAccessToken(merchantDTO.getMerchantLoginName(), String.valueOf(System.currentTimeMillis()));
             response.setHeader("accessToken", accessToken);
             //redisUtil.set("testsentinel","456");
-            redisUtil.set("testsentinel","456",1L);
+            redisUtil.set("testsentinel", "456", 1L);
             System.out.println(redisUtil.get("testsentinel"));
             List<String> methodNameList = permissionInterface.getMethodNameByType(merchantDTO.getUserType()).getData();
             Long invalid = Long.parseLong(setSelfRedis.getSessionInvalid()) * 60;
@@ -176,14 +180,14 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
         CommonResponse<MerchantDTO> commonResponse = new CommonResponse<>();
         try {
 
-            Optional<MerchantDTO> merchantDTOOptional = merchantService.getMerchantById(merchantId);
-            if (!merchantDTOOptional.isPresent()) {
+            MerchantDTO merchantDTO = merchantService.getMerchantById(merchantId);
+            if (!Optional.ofNullable(merchantDTO).isPresent()) {
                 commonResponse.setCode(ResponseCode.PARAMETER_ERROR);
                 commonResponse.setMsg("商家不存在");
                 return commonResponse;
             }
 
-            MerchantDTO merchantDTO = parseMerchantDTOOptional(merchantDTOOptional);
+            merchantDTO = parseCacheMerchantDTO(merchantDTO);
 
             if (!UserTypeConstant.MERCHANT_TYPE.equals(merchantDTO.getUserType())) {
                 commonResponse.setCode(ResponseCode.PARAMETER_ERROR);
@@ -195,7 +199,7 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
             Point point = new Point(Double.parseDouble(merchantDTO.getMerchantLongitude() + ""),
                     Double.parseDouble(merchantDTO.getMerchantLatitude() + ""));
             redisTemplate.opsForGeo().add(merchantRedisSetting.getMerchantLac(),
-                    new RedisGeoCommands.GeoLocation(merchantDTO.getMerchantId(),point));
+                    new RedisGeoCommands.GeoLocation(merchantDTO.getMerchantId(), point));
 
             commonResponse.setCode(ResponseCode.SUCCESS);
             commonResponse.setMsg("获取商家信息成功");
@@ -216,8 +220,8 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
      */
     @Override
     public Optional<MerchantDTO> getMerchantToInternalUse(@RequestParam(value = "merchantId") String merchantId) {
-        Optional<MerchantDTO> merchantDTOOptional = merchantService.getMerchantById(merchantId);
-        MerchantDTO merchantDTO = parseMerchantDTOOptional(merchantDTOOptional);
+        MerchantDTO merchantDTO = merchantService.getMerchantById(merchantId);
+        merchantDTO = parseCacheMerchantDTO(merchantDTO);
         return Optional.ofNullable(merchantDTO);
     }
 
@@ -293,15 +297,15 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
             }
 
             // 获取修改前的商家信息
-            Optional<MerchantDTO> merchantDTOOptional = merchantService.getMerchantById(merchantDTO.getMerchantId());
-            if (!merchantDTOOptional.isPresent()) {
+            MerchantDTO merchant = merchantService.getMerchantById(merchantDTO.getMerchantId());
+            if (!Optional.ofNullable(merchant).isPresent()) {
                 errMap.put("merchantId", "商家不存在");
                 baseResponse.setCode(ResponseCode.PARAMETER_ERROR);
                 baseResponse.setErrorMap(errMap);
                 return baseResponse;
             }
 
-            MerchantDTO merchant = parseMerchantDTOOptional(merchantDTOOptional);
+            merchant = parseCacheMerchantDTO(merchant);
 
             if (!merchant.getMerchantAddress().equals(merchantDTO.getMerchantAddress())) {
                 //验证商家地址
@@ -323,19 +327,24 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
             String merchantLoginNameNew = merchantDTO.getMerchantLoginName();
 
             if (!StringUtils.isEmpty(merchantLoginNameOld)
-                    && !StringUtils.isEmpty(merchantLoginNameNew)){
-                if (merchantLoginNameOld.equals(merchantLoginNameNew)){
-                    merchantDTO.setMerchantLoginName(null);
-                }else {
-                    Optional<MerchantDTO> merchantDTOOpt = merchantService.loginByMerchantName(merchantDTO);
-                    if (merchantDTOOpt.isPresent()){
+                    && !StringUtils.isEmpty(merchantLoginNameNew)) {
+                if (merchantLoginNameOld.equals(merchantLoginNameNew)) {
+                    //merchantDTO.setMerchantLoginName(null);
+                } else {
+                    MerchantDTO merchantDTO1 = merchantService.loginByMerchantName(merchantDTO);
+                    if (Optional.ofNullable(merchantDTO1).isPresent()) {
                         baseResponse.setCode(ResponseCode.PARAMETER_ERROR);
                         errMap.put("merchantLoginName", "登录名已存在");
                         baseResponse.setErrorMap(errMap);
                         return baseResponse;
                     }
                 }
+            }
 
+            String merchantPassword = merchantDTO.getMerchantPassword();
+            if(!StringUtils.isEmpty(merchantPassword)){
+                String encodePassword = DigestUtils.md5DigestAsHex((merchantPassword + merchant.getSalt()).getBytes());
+                merchantDTO.setMerchantPassword(encodePassword);
             }
 
             merchantService.updateMerchant(merchantDTO);
@@ -424,11 +433,11 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
     }
 
     @GetMapping(value = "/merchant/near")
-    public MultiDataResponse getNearMerchant(@RequestParam(value = "lon")double lon,
-                                             @RequestParam(value = "lat")double lat,
-                                             @RequestParam(value = "distance")double distance){
+    public MultiDataResponse getNearMerchant(@RequestParam(value = "lon") double lon,
+                                             @RequestParam(value = "lat") double lat,
+                                             @RequestParam(value = "distance") double distance) {
         MultiDataResponse multiDataResponse = new MultiDataResponse();
-        GeoResults geoResults = merchantService.findByLocationNear(lon,lat,distance);
+        GeoResults geoResults = merchantService.findByLocationNear(lon, lat, distance);
         multiDataResponse.setData(geoResults.getContent());
         return multiDataResponse;
     }
@@ -450,21 +459,21 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
     /**
      * 验证登录
      *
-     * @param merchantDTOOptional
+     * @param merchantDTO
      * @param merchantPassword
      * @return
      * @throws InvalidKeySpecException
      * @throws NoSuchAlgorithmException
      */
-    private Map<String, String> validateLogin(Optional<MerchantDTO> merchantDTOOptional,
+    private Map<String, String> validateLogin(MerchantDTO merchantDTO,
                                               String merchantPassword) throws InvalidKeySpecException, NoSuchAlgorithmException {
         Map<String, String> errMap = new HashMap<>();
-        if (!merchantDTOOptional.isPresent()) {
+        if (!Optional.ofNullable(merchantDTO).isPresent()) {
             errMap.put("merchantLoginName", "商家登陆名或密码错误");
             return errMap;
         }
 
-        MerchantDTO merchantDTO = parseMerchantDTOOptional(merchantDTOOptional);
+        merchantDTO = parseCacheMerchantDTO(merchantDTO);
 
         if (!UserTypeConstant.MERCHANT_TYPE.equals(merchantDTO.getUserType())) {
             errMap.put("userType", "非商家用户不许登陆");
@@ -499,17 +508,27 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
         int validateReturnCode = 0;
         Map<String, String> errorMap = new HashMap<>();
 
+        String merchantLoginName = merchantDTO.getMerchantLoginName();
+
         // 验证商家登录名
-        validateReturnCode = ValidatorUtil.validParameterAlert(merchantDTO.getMerchantLoginName(), "商家登录名", true, 1, 200, 4, errorMap);
+        validateReturnCode = ValidatorUtil.validParameterAlert(merchantLoginName, "商家登录名", true, 1, 200, 4, errorMap);
         if (validateReturnCode != 0) {
             errorMap.put("merchantLoginName", errorMap.get("商家登陆名"));
             errorMap.remove(errorMap.get("商家登陆名"));
         }
 
-        Optional<MerchantDTO> merchantDTOOptional = merchantService.loginByMerchantName(merchantDTO);
-        if (merchantDTOOptional.isPresent()){
+        if (clusterClient.exists("merchantLoginName", merchantLoginName)) {
             errorMap.put("merchantLoginName", "商家登录名重复");
+        }else {
+            MerchantDTO merchant = merchantService.loginByMerchantName(merchantDTO);
+            if (Optional.ofNullable(merchant).isPresent()){
+                errorMap.put("merchantLoginName", "商家登录名重复");
+            }
+
+            clusterClient.add("merchantLoginName", merchantLoginName);
         }
+
+
 
         // 验证商家名字
         validateReturnCode = ValidatorUtil.validParameterAlert(merchantDTO.getMerchantName(), "商家名字", true, 1, 200, 4, errorMap);
@@ -558,16 +577,14 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
 
     /**
      * 通过redis缓存读取数据时的转换需要
-     * @param merchantDTOOptional
+     *
+     * @param merchantDTO
      * @return
      */
-    private MerchantDTO parseMerchantDTOOptional(Optional<MerchantDTO> merchantDTOOptional){
-        MerchantDTO merchantDTO ;
-        if (LinkedHashMap.class.isInstance(merchantDTOOptional.get())){
-            merchantDTO = JSON.parseObject(JSON.toJSON(merchantDTOOptional.get()).toString(),MerchantDTO.class);
-        }else {
-            merchantDTO = merchantDTOOptional.get();
-        }
+    private MerchantDTO parseCacheMerchantDTO(MerchantDTO merchantDTO) {
+        if (LinkedHashMap.class.isInstance(merchantDTO)) {
+            merchantDTO = JSON.parseObject(JSON.toJSON(merchantDTO).toString(), MerchantDTO.class);
+        } 
         return merchantDTO;
     }
 

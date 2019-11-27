@@ -55,14 +55,14 @@ public class MerchantServiceImpl implements MerchantService {
     private MerchantRedisSetting merchantRedisSetting;
 
     @Override
-    //Cacheable(cacheManager = "redisCacheManager", value = "merchant-r", key = "#merchantDTO.merchantLoginName")
-    public Optional<MerchantDTO> loginByMerchantName(MerchantDTO merchantDTO) {
-        merchantDTO = merchantMapperExt.loginByMerchantName(merchantDTO);
-        Optional<MerchantDTO> merchantDTOOptional = Optional.ofNullable(merchantDTO);
-        if (merchantDTOOptional.isPresent()) {
-            return merchantDTOOptional;
-        }
-        return Optional.empty();
+    // 返回对象作为缓存值
+    @Cacheable(cacheManager = "redisCacheManager",
+            value = "merchant-r",
+            key = "#merchantDTO.merchantLoginName",
+            condition = "#result ne null")
+    public MerchantDTO loginByMerchantName(MerchantDTO merchantDTO) {
+        MerchantDTO merchant = merchantMapperExt.loginByMerchantName(merchantDTO);
+        return merchant;
     }
 
     @Override
@@ -100,17 +100,20 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    @Cacheable(cacheManager = "redisCacheManager", value = "merchant-r", key = "#merchantId")
-    public Optional<MerchantDTO> getMerchantById(String merchantId) {
+    @Cacheable(cacheManager = "redisCacheManager",
+            value = "merchant-r",
+            key = "#merchantId",
+            condition = "#result ne null")
+    public MerchantDTO getMerchantById(String merchantId) {
         Merchant merchant = merchantMapperExt.selectByPrimaryKey(merchantId);
 
         Optional<Merchant> merchantOptional = Optional.ofNullable(merchant);
         if (merchantOptional.isPresent()) {
             MerchantDTO merchantDTO = transform(merchant);
 
-            return Optional.ofNullable(merchantDTO);
+            return merchantDTO;
         }
-        return Optional.empty();
+        return null;
     }
 
     @Override
@@ -163,7 +166,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     @CachePut(cacheManager = "redisCacheManager", value = "merchant-r",
-            key = "#merchantDTO.merchantId", condition = "#result ne null")
+            key = "#merchantDTO.merchantLoginName", condition = "#result ne null")
     public MerchantDTO updateMerchant(MerchantDTO merchantDTO) {
         merchantMapperExt.updateByPrimaryKeySelective(merchantDTO);
 
