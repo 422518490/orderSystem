@@ -58,11 +58,10 @@ public class MerchantServiceImpl implements MerchantService {
     // 返回对象作为缓存值
     @Cacheable(cacheManager = "redisCacheManager",
             value = "merchant-r",
-            key = "#merchantDTO.merchantLoginName",
-            condition = "#result ne null")
-    public MerchantDTO loginByMerchantName(MerchantDTO merchantDTO) {
+            key = "#merchantDTO.merchantLoginName")
+    public Optional<MerchantDTO> loginByMerchantName(MerchantDTO merchantDTO) {
         MerchantDTO merchant = merchantMapperExt.loginByMerchantName(merchantDTO);
-        return merchant;
+        return Optional.ofNullable(merchant);
     }
 
     @Override
@@ -104,16 +103,15 @@ public class MerchantServiceImpl implements MerchantService {
             value = "merchant-r",
             key = "#merchantId",
             condition = "#result ne null")
-    public MerchantDTO getMerchantById(String merchantId) {
+    public Optional<MerchantDTO> getMerchantById(String merchantId) {
         Merchant merchant = merchantMapperExt.selectByPrimaryKey(merchantId);
 
         Optional<Merchant> merchantOptional = Optional.ofNullable(merchant);
         if (merchantOptional.isPresent()) {
             MerchantDTO merchantDTO = transform(merchant);
-
-            return merchantDTO;
+            return Optional.ofNullable(merchantDTO);
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -169,6 +167,8 @@ public class MerchantServiceImpl implements MerchantService {
             key = "#merchantDTO.merchantLoginName", condition = "#result ne null")
     public MerchantDTO updateMerchant(MerchantDTO merchantDTO) {
         merchantMapperExt.updateByPrimaryKeySelective(merchantDTO);
+
+        merchantDTO = loginByMerchantName(merchantDTO).get();
 
         //发送日志给rabbit mq
         operationLogHandler.sendOperationLog(OperationTypeConstant.REGISTER_MERCHANT, merchantDTO.getMerchantId(), merchantDTO.getMerchantId(), "更新商家信息");
