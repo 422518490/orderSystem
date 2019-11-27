@@ -41,7 +41,7 @@ public class RedisMessageRefreshClusterNodeFactory {
      */
     ConcurrentHashMap masterNodeMap = new ConcurrentHashMap();
 
-    //@Scheduled(cron = "${redis.cluster.refresh.scheduled}")
+    @Scheduled(cron = "${redis.cluster.refresh.scheduled}")
     public void refreshClusterNode() {
         RedisClusterConnection clusterConnection = redisConnectionFactory.getClusterConnection();
         if (Optional.ofNullable(clusterConnection).isPresent()) {

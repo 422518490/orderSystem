@@ -114,7 +114,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         return config;
     }
 
-    /*@Bean
+    @Bean
     public LettuceConnectionFactory lettuceConnectionFactory(){
         // 开启自适应集群拓扑刷新和周期拓扑刷新
         ClusterTopologyRefreshOptions refreshOptions = ClusterTopologyRefreshOptions.builder()
@@ -156,7 +156,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         // 重置底层共享连接, 在接下来的访问时初始化
         // lettuceConnectionFactory.resetConnection();
         return lettuceConnectionFactory;
-    }*/
+    }
 
     /**
      * 设置redis 缓存时间 5 分钟

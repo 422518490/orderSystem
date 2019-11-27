@@ -75,8 +75,8 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
     @Resource
     private Client bloomClient;
 
-    /*@Resource
-    private ClusterClient clusterClient;*/
+    @Resource
+    private ClusterClient clusterClient;
 
     @Resource
     private RedisTemplate redisTemplate;
@@ -517,7 +517,7 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
             errorMap.remove(errorMap.get("商家登陆名"));
         }
 
-        /*if (clusterClient.exists("merchantLoginName", merchantLoginName)) {
+        if (clusterClient.exists("merchantLoginName", merchantLoginName)) {
             errorMap.put("merchantLoginName", "商家登录名重复");
         }else {
             MerchantDTO merchant = merchantService.loginByMerchantName(merchantDTO);
@@ -526,7 +526,7 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
             }
 
             clusterClient.add("merchantLoginName", merchantLoginName);
-        }*/
+        }
 
 
 
