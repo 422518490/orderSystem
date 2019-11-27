@@ -20,7 +20,7 @@ import java.util.Set;
  */
 @Configuration
 @Data
-@ConfigurationProperties(prefix = "spring.redis.sentinel")
+@ConfigurationProperties(prefix = "spring.redis.cluster")
 public class RedisBloomConfig {
 
     /*@Value("${spring.redis.host}")

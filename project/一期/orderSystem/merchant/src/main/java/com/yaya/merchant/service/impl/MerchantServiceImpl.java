@@ -55,7 +55,7 @@ public class MerchantServiceImpl implements MerchantService {
     private MerchantRedisSetting merchantRedisSetting;
 
     @Override
-    @Cacheable(cacheManager = "redisCacheManager", value = "merchant-r", key = "#merchantDTO.merchantLoginName")
+    //Cacheable(cacheManager = "redisCacheManager", value = "merchant-r", key = "#merchantDTO.merchantLoginName")
     public Optional<MerchantDTO> loginByMerchantName(MerchantDTO merchantDTO) {
         merchantDTO = merchantMapperExt.loginByMerchantName(merchantDTO);
         Optional<MerchantDTO> merchantDTOOptional = Optional.ofNullable(merchantDTO);

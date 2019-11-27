@@ -42,6 +42,6 @@ eureka:
 listener:
   redis:
     #1表示redis的db1,针对单机过期
-    order_topic_expired: __keyevent@5__:expired
+    order_topic_expired: __keyevent@0__:expired
     #针对删除某个特定的信息
     order_topic_del: __keyspace@1__:order1 del
