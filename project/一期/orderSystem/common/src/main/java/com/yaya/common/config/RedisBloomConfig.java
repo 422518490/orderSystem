@@ -21,7 +21,8 @@ import java.util.Set;
  */
 @Configuration
 @Data
-@ConfigurationProperties(prefix = "spring.redis.cluster")
+//@ConfigurationProperties(prefix = "spring.redis.cluster")
+@ConfigurationProperties(prefix = "spring.redis.sentinel")
 public class RedisBloomConfig {
 
     /*@Value("${spring.redis.host}")
@@ -38,7 +39,7 @@ public class RedisBloomConfig {
         return client;
     }
 
-    @Bean
+    /*@Bean
     public ClusterClient bloomClusterClient() {
         Set<HostAndPort> jedisClusterNodes = new HashSet();
         nodes.forEach(node ->{
@@ -52,5 +53,5 @@ public class RedisBloomConfig {
             clusterClient.createFilter("merchantLoginName",10000, 0.0001);
         }
         return clusterClient;
-    }
+    }*/
 }
