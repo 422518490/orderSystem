@@ -10,8 +10,11 @@ import com.yaya.order.constant.OrderStatusConstant;
 import com.yaya.order.dao.OrdersMapperExt;
 import com.yaya.order.dto.OrdersDTO;
 import com.yaya.order.service.OrdersService;
+import com.yaya.order.setting.OrderSetting;
 import com.yaya.order.socket.OrderSocket;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -27,6 +30,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author liaoyubo
@@ -50,33 +54,44 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
     @Resource
     private OrderSocket orderSocket;
 
+    @Resource
+    private CuratorFramework curatorFramework;
+
+    @Resource
+    private OrderSetting orderSetting;
+
     @Override
     @RabbitHandler
     @Transactional(rollbackFor = Exception.class)
     public void addOrders(OrdersDTO ordersDTO, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) {
 
+        InterProcessMutex mutexLock = new InterProcessMutex(curatorFramework,orderSetting.getZookeeperLock());
         try {
-            ordersDTO.setCreateTime(new Date());
-            ordersDTO.setOrderStatus(OrderStatusConstant.ORDER_NEW);
-            ordersMapperExt.insertSelective(ordersDTO);
+            // 持有锁的时间为5s
+            if (mutexLock.acquire(orderSetting.getKeepLockTime(), TimeUnit.SECONDS)){
+                Thread.sleep(10000);
+                ordersDTO.setCreateTime(new Date());
+                ordersDTO.setOrderStatus(OrderStatusConstant.ORDER_NEW);
+                ordersMapperExt.insertSelective(ordersDTO);
 
-            // 保存完订单后，发送信息给商家
-            String uuid = UUIDUtil.getUUID();
-            CorrelationData correlationData = new CorrelationData();
-            correlationData.setId(uuid);
+                // 保存完订单后，发送信息给商家
+                String uuid = UUIDUtil.getUUID();
+                CorrelationData correlationData = new CorrelationData();
+                correlationData.setId(uuid);
 
-            //redis中缓存订单信息，防止MQ发送失败
-            redisTemplate.opsForHash().put(RedisKeyConstant.ORDER_CREATED_HASH, uuid, ordersDTO);
+                //redis中缓存订单信息，防止MQ发送失败
+                redisTemplate.opsForHash().put(RedisKeyConstant.ORDER_CREATED_HASH, uuid, ordersDTO);
 
-            rabbitTemplate.convertAndSend(RabbitExchangeConstant.ORDER_EXCHANGE,
-                    RabbitRoutingKeyConstant.ORDER_MERCHANT_ROUTING_KEY,
-                    ordersDTO,
-                    correlationData);
+                rabbitTemplate.convertAndSend(RabbitExchangeConstant.ORDER_EXCHANGE,
+                        RabbitRoutingKeyConstant.ORDER_MERCHANT_ROUTING_KEY,
+                        ordersDTO,
+                        correlationData);
 
-            // 发送一个通知消息给前端(websocket方式)或者APP(采用MQ)说明订单已经创建
-            orderSocket.handleMessage("创建订单成功");
+                // 发送一个通知消息给前端(websocket方式)或者APP(采用MQ)说明订单已经创建
+                orderSocket.handleMessage("创建订单成功");
 
-            channel.basicAck(tag, false);
+                channel.basicAck(tag, false);
+            }
         } catch (Exception e) {
             log.error("消费订单信息出错:{}", e);
             try {
@@ -84,6 +99,12 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
                 channel.basicNack(tag, false, true);
             } catch (IOException ioe) {
                 log.error("重新确认消费订单信息错误:{}", ioe);
+            }
+        }finally {
+            try {
+                mutexLock.release();
+            } catch (Exception e) {
+                log.error("释放zookeeper锁失败");
             }
         }
     }

@@ -45,3 +45,10 @@ listener:
     order_topic_expired: __keyevent@0__:expired
     #针对删除某个特定的信息
     order_topic_del: __keyspace@1__:order1 del
+
+order:
+  zookeeper:
+    # 加锁路径
+    lockpath: /zkOrder
+    # 持有锁时长
+    keeplocktime: 5
