@@ -5,6 +5,7 @@ import com.yaya.common.constant.RabbitExchangeConstant;
 import com.yaya.common.constant.RabbitRoutingKeyConstant;
 import com.yaya.common.constant.RedisKeyConstant;
 import com.yaya.common.constant.WebSocketDestinationConstant;
+import com.yaya.common.util.RedisUtil;
 import com.yaya.common.util.UUIDUtil;
 import com.yaya.order.constant.OrderStatusConstant;
 import com.yaya.order.dao.OrdersMapperExt;
@@ -60,6 +61,9 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
     @Resource
     private OrderSetting orderSetting;
 
+    @Resource
+    private RedisUtil redisUtil;
+
     @Override
     @RabbitHandler
     @Transactional(rollbackFor = Exception.class)
@@ -95,6 +99,20 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
         } catch (Exception e) {
             log.error("消费订单信息出错:{}", e);
             try {
+                String orderFailure = "orderid-" + ordersDTO.getOrderId() + "-failure";
+                Object count = redisUtil.get(orderFailure);
+                if (Optional.ofNullable(count).isPresent()) {
+                    redisUtil.set(orderFailure,1);
+                }else {
+                    int intCount = Integer.parseInt(count + "");
+                    // 超过5次就暂时不创建了
+                    if (intCount == 5){
+                        channel.basicAck(tag, false);
+                        redisUtil.remove(orderFailure);
+                    }else {
+                        redisUtil.set(orderFailure,intCount++);
+                    }
+                }
                 // 消费失败，重新发送消息
                 channel.basicNack(tag, false, true);
             } catch (IOException ioe) {

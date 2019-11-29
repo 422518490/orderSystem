@@ -12,6 +12,7 @@ import org.yeauty.pojo.Session;
 
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * @author liaoyubo
@@ -41,7 +42,7 @@ public class OrderSocket {
 
     @OnMessage
     public void handleMessage(String message){
-        if (session.isOpen()){
+        if (Optional.ofNullable(session).isPresent() && session.isOpen()){
             session.sendText(message);
         }
     }
