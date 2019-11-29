@@ -103,7 +103,7 @@ public class RedisDistributedLock implements Lock {
 	private void unlockUseLua() {
     	/* 脚本文件的方式
     	ScriptSource scriptSource = 
-    			new ResourceScriptSource(new ClassPathResource("unlock.lua"));
+    			new ResourceScriptSource(new ClassPathResource("/lua/unlock.lua"));
     	DefaultRedisScript<Boolean> defaultScript = new DefaultRedisScript<Boolean>();
     	defaultScript.setScriptSource(scriptSource);
     	*/
