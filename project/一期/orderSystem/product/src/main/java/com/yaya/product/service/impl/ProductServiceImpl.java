@@ -87,12 +87,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateProductPrice(ProductDTO productDTO) {
+    public Optional<ProductDTO> updateProductPrice(ProductDTO productDTO) {
         //获取修改前的数据
         productDTO.setProductEnable(ProductEnableConstant.PRODUCT_ENABLE);
         List<ProductDTO> productDTOList = productMapper.getProducts(productDTO);
         //更新价格
         productMapper.updateProductPrice(productDTO);
+        Optional<ProductDTO> productDTOOptional = getProduct(productDTO);
         //将原来的价格保存为历史
         ProductPriceHistoryDTO productPriceHistoryDTO = new ProductPriceHistoryDTO();
         productPriceHistoryDTO.setProductPriceHistoryId(UUIDUtil.getUUID());
@@ -105,6 +106,8 @@ public class ProductServiceImpl implements ProductService {
 
         //发送日志给rabbit mq
         operationLogHandler.sendOperationLog(OperationTypeConstant.MERCHANT_UPDATE_PRODUCT_PRICE, productDTO.getLoginUserId(), productDTO.getProductId(), "商家更新产品价格");
+
+        return productDTOOptional;
     }
 
     @Override

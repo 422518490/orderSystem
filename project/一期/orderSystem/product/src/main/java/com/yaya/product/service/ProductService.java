@@ -47,7 +47,7 @@ public interface ProductService {
      * 更新产品价格
      * @param productDTO
      */
-    void updateProductPrice(ProductDTO productDTO);
+    Optional<ProductDTO> updateProductPrice(ProductDTO productDTO);
 
     /**
      * 获取单个产品信息

@@ -33,6 +33,9 @@ spring:
         url: http://localhost:8095
         instance:
           service-url: http://localhost:8090
+  # 开启对spring cahce的支持
+  cache:
+    type: none
 
 
 eureka:
@@ -44,3 +47,25 @@ com:
   myboot:
     name: liaoyubo
     enable: true
+
+j2cache:
+  # j2cache配置文件路径
+  config-location: classpath:/config/j2cache.properties
+  # 开启对spring cahce的支持
+  open-spring-cache: true
+  # 设置spring cache是否缓存null值，默认是true
+  allow-null-values: true
+  # 缓存清除模式
+  # active:主动清除，二级缓存过期主动通知各节点清除，优点在于所有节点可以同时收到缓存清除
+  # passive:被动清除，一级缓存过期进行通知各节点清除一二级缓存
+  # blend:两种模式一起运作，对于各个节点缓存准确性以及及时性要求高的可以使用（推荐使用前面两种模式中一种）
+  cache-clean-mode: active
+  # 使用springRedis进行广播通知缓失效
+  broadcast: net.oschina.j2cache.cache.support.redis.SpringRedisPubSubPolicy
+  # 使用springRedis替换二级缓存
+  L2:
+    provider_class: net.oschina.j2cache.cache.support.redis.SpringRedisProvider
+    config_section: redis
+  redis-client: lettuce
+  # 支持关闭二级缓存,默认开启
+  l2-cache-open: true

@@ -3,21 +3,18 @@ package com.yaya.common.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yaya.common.setting.RedisSetting;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.cache.RedisCacheWriter;
-import org.springframework.data.redis.connection.*;
+import org.springframework.data.redis.connection.RedisClusterConfiguration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
@@ -25,7 +22,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import javax.annotation.Resource;
@@ -41,7 +37,6 @@ import java.util.Set;
  * @description redis配置及缓存
  */
 @Configuration
-@EnableCaching
 public class RedisConfig extends CachingConfigurerSupport {
 
     @Resource
@@ -115,7 +110,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     }
 
     @Bean
-    public LettuceConnectionFactory lettuceConnectionFactory(){
+    public LettuceConnectionFactory lettuceConnectionFactory() {
         // 开启自适应集群拓扑刷新和周期拓扑刷新
         ClusterTopologyRefreshOptions refreshOptions = ClusterTopologyRefreshOptions.builder()
                 // 开启全部自适应刷新,自适应刷新不开启,Redis集群变更时将会导致连接异常
@@ -158,23 +153,6 @@ public class RedisConfig extends CachingConfigurerSupport {
         return lettuceConnectionFactory;
     }
 
-    /**
-     * 设置redis 缓存时间 5 分钟
-     *
-     * @return
-     */
-    @Bean
-    public RedisCacheConfiguration redisCacheConfiguration() {
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig();
-        configuration = configuration.serializeValuesWith(
-                RedisSerializationContext
-                        .SerializationPair
-                        .fromSerializer(jackson2JsonRedisSerializer)
-        ).entryTtl(Duration.ofMinutes(5));
-        return configuration;
-    }
-
     @Bean
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         StringRedisTemplate template = new StringRedisTemplate(redisConnectionFactory);
@@ -195,13 +173,6 @@ public class RedisConfig extends CachingConfigurerSupport {
         return redisTemplate;
     }
 
-    @Bean
-    public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory,
-                                               RedisCacheConfiguration redisCacheConfiguration){
-        RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory);
-        RedisCacheManager redisCacheManager = new RedisCacheManager(redisCacheWriter,redisCacheConfiguration);
-        return redisCacheManager;
-    }
 
     private void setSerializer(StringRedisTemplate template) {
         Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);

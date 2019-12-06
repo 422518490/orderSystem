@@ -14,7 +14,9 @@ import com.yaya.product.orderApi.MerchantInterface;
 import com.yaya.product.service.ProductService;
 import com.yaya.product.template.ProductExportResult;
 import io.rebloom.client.Client;
+import io.rebloom.client.ClusterClient;
 import lombok.extern.slf4j.Slf4j;
+import net.oschina.j2cache.CacheChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +42,10 @@ public class ProductController {
     private MerchantInterface merchantInterface;
 
     @Resource
-    private Client bloomClient;
+    private ClusterClient bloomClusterClient;
+
+    @Resource
+    private CacheChannel cacheChannel;
 
     /**
      * 添加商家产品
@@ -73,14 +78,14 @@ public class ProductController {
                 return baseResponse;
             }
 
-            if (bloomClient.exists("product",productDTO.getProductName())){
+            if (bloomClusterClient.exists("product",productDTO.getProductName())){
                 baseResponse.setCode(ResponseCode.PARAMETER_ERROR);
                 baseResponse.setMsg("产品已经存在，不能重复添加");
                 return baseResponse;
             }
 
             productService.addProduct(productDTO);
-            bloomClient.add("product",productDTO.getProductName());
+            bloomClusterClient.add("product",productDTO.getProductName());
             baseResponse.setCode(ResponseCode.SUCCESS);
             baseResponse.setMsg("新增产品成功");
         } catch (Exception e) {
@@ -142,7 +147,8 @@ public class ProductController {
                 errMap.put("merchantId", "商家ID不能为空");
             }
 
-            if (StringUtils.isEmpty(productDTO.getProductId())) {
+            String productId = productDTO.getProductId();
+            if (StringUtils.isEmpty(productId)) {
                 errMap.put("productId", "产品ID不能为空");
             }
 
@@ -153,7 +159,18 @@ public class ProductController {
             }
 
             isProductEnable(productDTO);
-            Optional<ProductDTO> productDTOOptional = productService.getProduct(productDTO);
+
+            Optional<ProductDTO> productDTOOptional;
+            if (cacheChannel.exists("product",productId)) {
+                Object product = cacheChannel.get("product", productId).getValue();
+                productDTOOptional = Optional.ofNullable((ProductDTO)product);
+            }else {
+                productDTOOptional = productService.getProduct(productDTO);
+                if (productDTOOptional.isPresent()){
+                    cacheChannel.set("product",productId,productDTOOptional.get());
+                }
+            }
+
             if (!productDTOOptional.isPresent()) {
                 commonResponse.setCode(ResponseCode.PARAMETER_ERROR);
                 commonResponse.setMsg("产品不存在");
@@ -161,9 +178,12 @@ public class ProductController {
             }
 
             Optional<MerchantDTO> merchantDTOOptional = merchantInterface.getMerchantToInternalUse(merchantId);
-            commonResponse = (CommonResponse<ProductDTO>) isMerchantExists(merchantDTOOptional, productDTOOptional.get());
+            BaseResponse baseResponse =  isMerchantExists(merchantDTOOptional, productDTOOptional.get());
 
-            if (commonResponse.getCode() != ResponseCode.SUCCESS) {
+            if (baseResponse.getCode() != ResponseCode.SUCCESS) {
+                commonResponse.setCode(baseResponse.getCode());
+                commonResponse.setMsg(baseResponse.getMsg());
+                commonResponse.setErrorMap(baseResponse.getErrorMap());
                 return commonResponse;
             }
             commonResponse.setData(productDTOOptional.get());
@@ -244,6 +264,7 @@ public class ProductController {
             for (int i = 0; i == 0 || i < productId.length - 1; i++) {
                 productIdList.add(productId[i]);
             }
+            cacheChannel.evict("product",productIdStr);
 
             productDTO.setProductIdList(productIdList);
             productDTO.setProductEnable(ProductEnableConstant.PRODUCT_DISABLE);
@@ -296,7 +317,8 @@ public class ProductController {
                 return baseResponse;
             }
 
-            productService.updateProductPrice(productDTO);
+            Optional<ProductDTO> productDTOOptional = productService.updateProductPrice(productDTO);
+            cacheChannel.set("product",productDTO.getProductId(),productDTOOptional.get());
             baseResponse.setCode(ResponseCode.SUCCESS);
             baseResponse.setMsg("更新产品价格成功");
         } catch (Exception e) {
