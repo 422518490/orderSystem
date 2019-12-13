@@ -51,4 +51,9 @@ public class OrderStatusConstant {
      * 08----客户收到订单
      */
     public static final String ORDER_CLIENT_REVICE = "08";
+
+    /**
+     * 09----送餐员拒绝订单
+     */
+    public static final String ORDER_DELIVERY_REFUSE = "09";
 }

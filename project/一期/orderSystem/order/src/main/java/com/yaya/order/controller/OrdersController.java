@@ -6,19 +6,25 @@ import com.yaya.common.constant.RedisKeyConstant;
 import com.yaya.common.response.BaseResponse;
 import com.yaya.common.response.ResponseCode;
 import com.yaya.common.util.UUIDUtil;
+import com.yaya.order.constant.OrderMQConstant;
+import com.yaya.order.constant.UserTypeConstant;
+import com.yaya.order.dto.OrderDeleteDTO;
 import com.yaya.order.dto.OrdersDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.activemq.ActiveMQMessageProducer;
+import org.apache.activemq.ActiveMQSession;
+import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.ProducerCallback;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.jms.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -39,6 +45,12 @@ public class OrdersController implements ConfirmCallback {
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    @Resource
+    private JmsTemplate jmsTemplate;
+
+    @Resource
+    private JmsTemplate topicJmsTemplate;
 
 
     @PostMapping
@@ -87,6 +99,79 @@ public class OrdersController implements ConfirmCallback {
                     correlationData);
         } catch (Exception e) {
             log.error("新增订单错误:{}", e);
+            baseResponse.setCode(ResponseCode.SERVER_ERROR);
+            baseResponse.setMsg("服务器错误");
+        }
+        return baseResponse;
+    }
+
+    @DeleteMapping
+    public BaseResponse deleteOrder(@RequestParam(value = "orderId") String orderId,
+                                    @RequestParam(value = "userType") String userType) {
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setCode(ResponseCode.SUCCESS);
+        baseResponse.setMsg("删除订单成功");
+        try {
+            OrderDeleteDTO orderDeleteDTO = new OrderDeleteDTO();
+            orderDeleteDTO.setOrderId(orderId);
+            orderDeleteDTO.setUserType(userType);
+            jmsTemplate.convertAndSend(OrderMQConstant.DEL_ORDER, orderDeleteDTO);
+            jmsTemplate.execute((session, messageProducer) -> {
+                Message message = jmsTemplate.getMessageConverter().toMessage(orderDeleteDTO, session);
+                // 添加property属性，因为header为固定的
+                message.setStringProperty("delOrder","updateStatus");
+                if (UserTypeConstant.MERCHANT.equals(userType)){
+                    message.setStringProperty("delUserType","merchant");
+                }else {
+                    message.setStringProperty("delUserType","other");
+                }
+                // 同时定义给queue和topic发送
+                Queue queue = session.createQueue("queue://helloQueue,topic://helloTopic");
+                messageProducer.send(queue,message);
+                return null;
+            });
+        } catch (Exception e) {
+            log.error("删除订单错误:{}", e);
+            baseResponse.setCode(ResponseCode.SERVER_ERROR);
+            baseResponse.setMsg("服务器错误");
+        }
+        return baseResponse;
+    }
+
+    @GetMapping("/testMQ")
+    public BaseResponse testMQ(){
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setCode(ResponseCode.SUCCESS);
+        baseResponse.setMsg("删除订单成功");
+        try {
+            jmsTemplate.convertAndSend("helloQueue1", 1,message -> {
+                message.setStringProperty("queueName","helloQueue1");
+                return message;
+            });
+
+            Thread.sleep(5000);
+            jmsTemplate.convertAndSend("helloQueue2", 2,message -> {
+                message.setStringProperty("queueName","helloQueue2");
+                return message;
+            });
+
+            OrderDeleteDTO orderDeleteDTO = new OrderDeleteDTO();
+            orderDeleteDTO.setOrderId("1");
+            orderDeleteDTO.setUserType("01");
+
+            Thread.sleep(5000);
+            topicJmsTemplate.convertAndSend("helloTopic1",orderDeleteDTO,message -> {
+                message.setStringProperty("topicName","helloTopic1");
+                return message;
+            });
+
+            Thread.sleep(5000);
+            topicJmsTemplate.convertAndSend("helloTopic2",orderDeleteDTO,message -> {
+                message.setStringProperty("topicName","helloTopic2");
+                return message;
+            });
+        } catch (Exception e) {
+            log.error("删除订单错误:{}", e);
             baseResponse.setCode(ResponseCode.SERVER_ERROR);
             baseResponse.setMsg("服务器错误");
         }

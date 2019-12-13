@@ -32,6 +32,10 @@ spring:
         url: http://localhost:8095
         instance:
           service-url: http://localhost:8010
+  activemq:
+    broker-url: tcp://localhost:61616
+
+
 
 eureka:
   client:
