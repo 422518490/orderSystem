@@ -49,7 +49,7 @@ public class OrdersController implements ConfirmCallback {
     @Resource
     private JmsTemplate jmsTemplate;
 
-    @Resource
+    @Resource(name = "topicJmsTemplate")
     private JmsTemplate topicJmsTemplate;
 
 
@@ -144,20 +144,20 @@ public class OrdersController implements ConfirmCallback {
         baseResponse.setCode(ResponseCode.SUCCESS);
         baseResponse.setMsg("删除订单成功");
         try {
-            jmsTemplate.convertAndSend("helloQueue1", 1,message -> {
+            OrderDeleteDTO orderDeleteDTO = new OrderDeleteDTO();
+            orderDeleteDTO.setOrderId("1");
+            orderDeleteDTO.setUserType("01");
+
+            jmsTemplate.convertAndSend("helloQueue1", orderDeleteDTO,message -> {
                 message.setStringProperty("queueName","helloQueue1");
                 return message;
             });
 
             Thread.sleep(5000);
-            jmsTemplate.convertAndSend("helloQueue2", 2,message -> {
+            jmsTemplate.convertAndSend("helloQueue2", orderDeleteDTO,message -> {
                 message.setStringProperty("queueName","helloQueue2");
                 return message;
             });
-
-            OrderDeleteDTO orderDeleteDTO = new OrderDeleteDTO();
-            orderDeleteDTO.setOrderId("1");
-            orderDeleteDTO.setUserType("01");
 
             Thread.sleep(5000);
             topicJmsTemplate.convertAndSend("helloTopic1",orderDeleteDTO,message -> {
@@ -168,6 +168,7 @@ public class OrdersController implements ConfirmCallback {
             Thread.sleep(5000);
             topicJmsTemplate.convertAndSend("helloTopic2",orderDeleteDTO,message -> {
                 message.setStringProperty("topicName","helloTopic2");
+                message.setStringProperty("queueName","helloTopic2");
                 return message;
             });
         } catch (Exception e) {

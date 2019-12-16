@@ -48,10 +48,24 @@ public class ActiveMQConfig {
         return factory;
     }
 
-    @Bean
-    public JmsTemplate topicJmsTemplate(ConnectionFactory connectionFactory){
+    @Bean(name = "topicJmsTemplate")
+    public JmsTemplate topicJmsTemplate(ConnectionFactory connectionFactory,
+                                        MessageConverter jacksonJmsMessageConverter){
         JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
+        // 开启为topic方式
         jmsTemplate.setPubSubDomain(true);
+        // 消息的转换方式
+        jmsTemplate.setMessageConverter(jacksonJmsMessageConverter);
+        return jmsTemplate;
+    }
+
+    @Bean
+    @Primary
+    public JmsTemplate queueJmsTemplate(ConnectionFactory connectionFactory,
+                                        MessageConverter jacksonJmsMessageConverter){
+        JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
+        // 消息的转换方式
+        jmsTemplate.setMessageConverter(jacksonJmsMessageConverter);
         return jmsTemplate;
     }
 }

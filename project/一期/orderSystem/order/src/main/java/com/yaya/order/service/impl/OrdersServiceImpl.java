@@ -187,20 +187,25 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
 
     /**
      * 同时订阅多个主题
-     * @param message
+     *
+     * @param orderDeleteDTO
      * @param queueName
      */
     @JmsListeners(value = {@JmsListener(destination = "helloQueue1"),
-            @JmsListener(destination = "helloQueue2")})
-    public void jmsManyQueueTest(String message,@Header(value = "queueName")String queueName){
-        System.out.println(message + ":" + queueName);
+            @JmsListener(destination = "helloQueue2"),
+            @JmsListener(destination = "helloTopic2",
+                    containerFactory = "topicFactory")})
+    public void jmsManyQueueTest(OrderDeleteDTO orderDeleteDTO,
+                                 @Header(value = "queueName") String queueName) {
+        System.out.println(orderDeleteDTO + ":" + queueName);
     }
 
     @JmsListeners(value = {@JmsListener(destination = "helloTopic1",
             containerFactory = "topicFactory"),
             @JmsListener(destination = "helloTopic2",
                     containerFactory = "topicFactory")})
-    public void jmsManyTopicTest(OrderDeleteDTO orderDeleteDTO,@Header(value = "topicName")String topicName){
+    public void jmsManyTopicTest(OrderDeleteDTO orderDeleteDTO,
+                                 @Header(value = "topicName") String topicName) {
         System.out.println(orderDeleteDTO + ":" + topicName);
     }
 
