@@ -1,6 +1,7 @@
 package com.yaya.order.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Value;
@@ -90,10 +91,14 @@ public class ActiveMQConfig {
         Connection conn;
 
         try {
-            // 创建连接工厂
+            // 创建连接工厂，可以在brokerUrl后面跟上jms.useAsyncSend=true来表示异步发送消息
             connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
+            // 设置异步发送消息
+            connectionFactory.setAlwaysSyncSend(true);
             // 创建连接
             conn = connectionFactory.createConnection();
+            // 设置异步发送消息
+            //((ActiveMQConnection) conn).setAlwaysSyncSend(true);
             conn.start();
 
 
@@ -116,8 +121,8 @@ public class ActiveMQConfig {
         jmsTemplate.setDeliveryMode(DeliveryMode.PERSISTENT);
         // 是否持久化保存消息
         jmsTemplate.setDeliveryPersistent(true);
-        // 发送的消息的优先级，范围是0-127，值越大优先级越高
-        jmsTemplate.setPriority(2);
+        // 发送的消息的优先级，范围是0-127，值越大优先级越高，不起作用
+        //jmsTemplate.setPriority(2);
         // 消息的存活时间
         jmsTemplate.setTimeToLive(1000);
         // 消息确认机制

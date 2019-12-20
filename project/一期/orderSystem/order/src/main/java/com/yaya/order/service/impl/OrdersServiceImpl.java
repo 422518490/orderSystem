@@ -218,6 +218,30 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
         System.out.println(orderDeleteDTO + ":" + topicName);
     }
 
+    @JmsListener(destination = "virtualTopicConsumers.virtualTopic1.virtualTopic.topic")
+    public void testVirtualTopicMQ1(OrderDeleteDTO orderDeleteDTO,
+                                    @Header(value = "name") String name) {
+        System.out.println("testVirtualTopicMQ1:" + orderDeleteDTO + ":" + name);
+    }
+
+    @JmsListener(destination = "virtualTopicConsumers.virtualTopic1.virtualTopic.topic")
+    public void testVirtualTopicMQ1_1(OrderDeleteDTO orderDeleteDTO,
+                                    @Header(value = "name") String name) {
+        System.out.println("testVirtualTopicMQ1_1:" + orderDeleteDTO + ":" + name);
+    }
+
+    @JmsListener(destination = "virtualTopicConsumers.virtualTopic2.virtualTopic.topic")
+    public void testVirtualTopicMQ2(OrderDeleteDTO orderDeleteDTO,
+                                    @Header(value = "name") String name) {
+        System.out.println("testVirtualTopicMQ2:" + orderDeleteDTO + ":" + name);
+    }
+
+    @JmsListener(destination = "virtualTopicConsumers.virtualTopic2.virtualTopic.topic")
+    public void testVirtualTopicMQ2_1(OrderDeleteDTO orderDeleteDTO,
+                                    @Header(value = "name") String name) {
+        System.out.println("testVirtualTopicMQ2_1:" + orderDeleteDTO + ":" + name);
+    }
+
     @Override
     public void confirm(CorrelationData correlationData, boolean ack, String cause) {
         // 如果消息投递失败，如何处理

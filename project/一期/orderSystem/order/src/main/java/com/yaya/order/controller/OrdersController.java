@@ -128,6 +128,9 @@ public class OrdersController implements ConfirmCallback {
                 }else {
                     message.setStringProperty("delUserType","other");
                 }
+                // jms2.0支持，共享订阅
+                //session.createSharedConsumer();
+                // 消息的优先级，范围是0-9，值越大优先级越高
                 messageProducer.setPriority(5);
                 // 同时定义给queue和topic发送
                 Queue queue = session.createQueue("queue://helloQueue,topic://durableHelloTopic");
@@ -169,7 +172,7 @@ public class OrdersController implements ConfirmCallback {
                 message.setJMSDestination(destination);
                 // 设置消息过期时间
                 message.setJMSExpiration(2000);
-                // 消息的优先级，范围是0-9，值越大优先级越高
+                // 消息的优先级，范围是0-9，值越大优先级越高，不起作用
                 //message.setJMSPriority(9);
                 // 是否重发消息
                 message.setJMSRedelivered(true);
@@ -204,6 +207,42 @@ public class OrdersController implements ConfirmCallback {
             });
         } catch (Exception e) {
             log.error("删除订单错误:{}", e);
+            baseResponse.setCode(ResponseCode.SERVER_ERROR);
+            baseResponse.setMsg("服务器错误");
+        }
+        return baseResponse;
+    }
+
+    /**
+     * 负载均衡测试
+     * @return
+     */
+    @GetMapping("/testVirtualTopicMQ")
+    public BaseResponse testVirtualTopicMQ(){
+        BaseResponse baseResponse = new BaseResponse();
+        baseResponse.setCode(ResponseCode.SUCCESS);
+        baseResponse.setMsg("测试virtualTopic");
+        try {
+            OrderDeleteDTO orderDeleteDTO = new OrderDeleteDTO();
+            orderDeleteDTO.setOrderId("5");
+            orderDeleteDTO.setUserType("01");
+
+            for (int i = 0;i < 10;i++){
+                topicJmsTemplate.convertAndSend("virtualTopic.topic", orderDeleteDTO,message -> {
+                    message.setStringProperty("name","virtualTopic");
+                    return message;
+                });
+                /*topicJmsTemplate.execute((session, producer) -> {
+                    Message message = topicJmsTemplate.getMessageConverter().toMessage(orderDeleteDTO, session);
+                    // 添加property属性，因为header为固定的
+                    message.setStringProperty("name","virtualTopic");
+                    Destination destination = session.createTopic("virtualTopic.topic");
+                    producer.send(destination,message);
+                    return null;
+                });*/
+            }
+        } catch (Exception e) {
+            log.error("测试virtualTopic错误:{}", e);
             baseResponse.setCode(ResponseCode.SERVER_ERROR);
             baseResponse.setMsg("服务器错误");
         }
