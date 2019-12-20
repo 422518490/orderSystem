@@ -1,5 +1,6 @@
 package com.yaya.order.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
 import com.yaya.common.constant.RabbitExchangeConstant;
 import com.yaya.common.constant.RabbitRoutingKeyConstant;
@@ -35,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import javax.jms.Message;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
@@ -141,7 +143,8 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
     }
 
     @JmsListener(destination = OrderMQConstant.DEL_ORDER)
-    public void deleteOrder(OrderDeleteDTO orderDeleteDTO) {
+    public void deleteOrder(OrderDeleteDTO orderDeleteDTO,
+                            Message message) {
         String userType = orderDeleteDTO.getUserType();
         String orderStatus;
         switch (userType) {
@@ -170,17 +173,19 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
     @JmsListener(destination = "helloQueue", selector = "delOrder='updateStatus'")
     public void jmsQueueTest(OrderDeleteDTO orderDeleteDTO,
                              @Header("delUserType") String delUserType,
-                             @Header("delOrder") String delOrder) {
+                             @Header("delOrder") String delOrder,
+                             Message message) {
         String userType = orderDeleteDTO.getUserType();
         System.out.println("queue:" + userType + ",delUserType:" + delUserType + ",delOrder:" + delOrder);
     }
 
-    @JmsListener(destination = "helloTopic",
-            containerFactory = "topicFactory",
+    @JmsListener(destination = "durableHelloTopic",
+            containerFactory = "durableTopicFactory",
             selector = "delUserType='merchant'")
     public void jmsTopicTest(OrderDeleteDTO orderDeleteDTO,
                              @Header("delUserType") String delUserType,
-                             @Header("delOrder") String delOrder) {
+                             @Header("delOrder") String delOrder,
+                             Message message) {
         String userType = orderDeleteDTO.getUserType();
         System.out.println("topic:" + userType + ",delUserType:" + delUserType + ",delOrder:" + delOrder);
     }
@@ -194,10 +199,14 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
     @JmsListeners(value = {@JmsListener(destination = "helloQueue1"),
             @JmsListener(destination = "helloQueue2"),
             @JmsListener(destination = "helloTopic2",
+                    containerFactory = "topicFactory"),
+            @JmsListener(destination = "helloQueue1.qmirror",
                     containerFactory = "topicFactory")})
     public void jmsManyQueueTest(OrderDeleteDTO orderDeleteDTO,
-                                 @Header(value = "queueName") String queueName) {
+                                 @Header(value = "queueName") String queueName,
+                                 Message message) {
         System.out.println(orderDeleteDTO + ":" + queueName);
+        //System.out.println("message:" + JSON.toJSONString(message));
     }
 
     @JmsListeners(value = {@JmsListener(destination = "helloTopic1",

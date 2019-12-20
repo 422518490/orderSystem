@@ -11,6 +11,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ import java.util.List;
 @RabbitListener(queues = "operationLogQueue")
 public class OperationLogServiceImpl implements OperationLogService {
 
-    @Autowired
+    @Resource
     private OperationLogMapper operationLogMapper;
 
     @Override
