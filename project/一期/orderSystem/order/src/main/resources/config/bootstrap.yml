@@ -33,7 +33,9 @@ spring:
         instance:
           service-url: http://localhost:8010
   activemq:
-    broker-url: tcp://localhost:61616
+    # 设置消费者预取的消息数量为10，即设置的数量queuePrefetch*10
+    # 默认情况下预取的配置为：持久化和非持久化queue都为1000，持久化topic为100，非持久化topic为Short.MAX_VALUE - 1
+    broker-url: tcp://localhost:61616?jms.prefetchPolicy.queuePrefetch=1
 
 
 

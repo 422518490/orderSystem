@@ -1,6 +1,5 @@
 package com.yaya.order.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
 import com.yaya.common.constant.RabbitExchangeConstant;
 import com.yaya.common.constant.RabbitRoutingKeyConstant;
@@ -29,13 +28,13 @@ import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.annotation.JmsListeners;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import java.io.IOException;
 import java.util.Date;
@@ -72,9 +71,6 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
 
     @Resource
     private RedisUtil redisUtil;
-
-    @Resource
-    private JmsTemplate jmsTemplate;
 
     @Override
     @RabbitHandler
@@ -204,9 +200,14 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
                     containerFactory = "topicFactory")})
     public void jmsManyQueueTest(OrderDeleteDTO orderDeleteDTO,
                                  @Header(value = "queueName") String queueName,
-                                 Message message) {
+                                 Message message) throws JMSException {
         System.out.println(orderDeleteDTO + ":" + queueName);
         //System.out.println("message:" + JSON.toJSONString(message));
+        // 测试ack机制
+        /*if ("helloQueue1".equals(queueName)){
+            throw new RuntimeException("故意抛出的异常");
+        }*/
+        message.acknowledge();
     }
 
     @JmsListeners(value = {@JmsListener(destination = "helloTopic1",
@@ -214,8 +215,10 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
             @JmsListener(destination = "helloTopic2",
                     containerFactory = "topicFactory")})
     public void jmsManyTopicTest(OrderDeleteDTO orderDeleteDTO,
-                                 @Header(value = "topicName") String topicName) {
+                                 @Header(value = "topicName") String topicName,
+                                 Message message) throws JMSException {
         System.out.println(orderDeleteDTO + ":" + topicName);
+        //message.acknowledge();
     }
 
     @JmsListener(destination = "virtualTopicConsumers.virtualTopic1.virtualTopic.topic")
@@ -226,7 +229,7 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
 
     @JmsListener(destination = "virtualTopicConsumers.virtualTopic1.virtualTopic.topic")
     public void testVirtualTopicMQ1_1(OrderDeleteDTO orderDeleteDTO,
-                                    @Header(value = "name") String name) {
+                                      @Header(value = "name") String name) {
         System.out.println("testVirtualTopicMQ1_1:" + orderDeleteDTO + ":" + name);
     }
 
@@ -238,7 +241,7 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
 
     @JmsListener(destination = "virtualTopicConsumers.virtualTopic2.virtualTopic.topic")
     public void testVirtualTopicMQ2_1(OrderDeleteDTO orderDeleteDTO,
-                                    @Header(value = "name") String name) {
+                                      @Header(value = "name") String name) {
         System.out.println("testVirtualTopicMQ2_1:" + orderDeleteDTO + ":" + name);
     }
 

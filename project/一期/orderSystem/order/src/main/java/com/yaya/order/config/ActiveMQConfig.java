@@ -115,20 +115,20 @@ public class ActiveMQConfig {
         JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
         // 消息的转换方式
         jmsTemplate.setMessageConverter(jacksonJmsMessageConverter);
-        // 延迟发送,jms 2.0提供
+        // 延迟发送,jms 2.0提供,在activemq中通过在message中设置ScheduledMessage.AMQ_SCHEDULED_PERIOD代替
         //jmsTemplate.setDeliveryDelay(1000);
         // 消息保存机制，是否持久化保存
         jmsTemplate.setDeliveryMode(DeliveryMode.PERSISTENT);
         // 是否持久化保存消息
         jmsTemplate.setDeliveryPersistent(true);
-        // 发送的消息的优先级，范围是0-127，值越大优先级越高，不起作用
+        // 发送的消息的优先级，范围是0-9,消费者端优先级范围是0-127，TEST.QUEUE?consumer.priority=10，值越大优先级越高，不起作用
         //jmsTemplate.setPriority(2);
         // 消息的存活时间
         jmsTemplate.setTimeToLive(1000);
         // 消息确认机制
         jmsTemplate.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
         // 按照名称来设置消息确认机制
-        jmsTemplate.setSessionAcknowledgeModeName("CLIENT_ACKNOWLEDGE");
+        //jmsTemplate.setSessionAcknowledgeModeName("CLIENT_ACKNOWLEDGE");
 
         // 在没有提供queue或topic情况下，默认提供queue，
         // 需要注意的是使用execute()方法时需要DefaultDestination指定为null，否则报错

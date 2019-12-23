@@ -47,7 +47,7 @@ public class OrdersController implements ConfirmCallback {
     @Resource
     private RedisTemplate redisTemplate;
 
-    @Resource
+    @Resource(name = "queueJmsTemplate")
     private JmsTemplate jmsTemplate;
 
     @Resource(name = "topicJmsTemplate")
@@ -155,7 +155,8 @@ public class OrdersController implements ConfirmCallback {
             orderDeleteDTO.setOrderId("1");
             orderDeleteDTO.setUserType("01");
 
-            jmsTemplate.convertAndSend("helloQueue1", orderDeleteDTO,message -> {
+            Destination destination = new ActiveMQQueue("helloQueue1");
+            jmsTemplate.convertAndSend(destination, orderDeleteDTO,message -> {
                 message.setStringProperty("queueName","helloQueue1");
                 // 延时6秒，间隔2秒 ,投递6次(投递次数=重复次数+默认的一次)
                 message.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, 6 * 1000L);
@@ -168,8 +169,7 @@ public class OrdersController implements ConfirmCallback {
                 // 设置消息的延迟发送时间,jms 2.0提供
                 //message.setJMSDeliveryTime(1000);
                 // 设置消息的发送目标queue
-                Destination destination = new ActiveMQQueue("helloQueue");
-                message.setJMSDestination(destination);
+                //message.setJMSDestination(destination);
                 // 设置消息过期时间
                 message.setJMSExpiration(2000);
                 // 消息的优先级，范围是0-9，值越大优先级越高，不起作用
