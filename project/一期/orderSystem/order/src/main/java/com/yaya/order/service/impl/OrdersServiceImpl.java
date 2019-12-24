@@ -173,6 +173,7 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
                              Message message) {
         String userType = orderDeleteDTO.getUserType();
         System.out.println("queue:" + userType + ",delUserType:" + delUserType + ",delOrder:" + delOrder);
+        //throw new RuntimeException("故意抛出的异常");
     }
 
     @JmsListener(destination = "durableHelloTopic",
@@ -184,6 +185,7 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
                              Message message) {
         String userType = orderDeleteDTO.getUserType();
         System.out.println("topic:" + userType + ",delUserType:" + delUserType + ",delOrder:" + delOrder);
+        throw new RuntimeException("故意抛出的异常");
     }
 
     /**
@@ -194,6 +196,7 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
      */
     @JmsListeners(value = {@JmsListener(destination = "helloQueue1"),
             @JmsListener(destination = "helloQueue2"),
+            @JmsListener(destination = "helloQueue3"),
             @JmsListener(destination = "helloTopic2",
                     containerFactory = "topicFactory"),
             @JmsListener(destination = "helloQueue1.qmirror",
@@ -204,9 +207,9 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
         System.out.println(orderDeleteDTO + ":" + queueName);
         //System.out.println("message:" + JSON.toJSONString(message));
         // 测试ack机制
-        /*if ("helloQueue1".equals(queueName)){
+        if ("helloQueue3".equals(queueName)){
             throw new RuntimeException("故意抛出的异常");
-        }*/
+        }
         message.acknowledge();
     }
 

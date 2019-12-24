@@ -154,7 +154,10 @@ public class OrdersController implements ConfirmCallback {
             OrderDeleteDTO orderDeleteDTO = new OrderDeleteDTO();
             orderDeleteDTO.setOrderId("1");
             orderDeleteDTO.setUserType("01");
-
+            jmsTemplate.convertAndSend("helloQueue3",orderDeleteDTO,message -> {
+                message.setStringProperty("queueName", "helloQueue3");
+                return message;
+            });
             Destination destination = new ActiveMQQueue("helloQueue1");
             jmsTemplate.convertAndSend(destination, orderDeleteDTO,message -> {
                 message.setStringProperty("queueName","helloQueue1");
@@ -174,7 +177,7 @@ public class OrdersController implements ConfirmCallback {
                 message.setJMSExpiration(2000);
                 // 消息的优先级，范围是0-9，值越大优先级越高，不起作用
                 //message.setJMSPriority(9);
-                // 是否重发消息
+                // 是否重发消息,设置了重试机制后可以不用设置
                 message.setJMSRedelivered(true);
                 // 回复消息的queue
                 Destination replyDestination = new ActiveMQQueue("replyHelloQueue");

@@ -1,8 +1,8 @@
 package com.yaya.order.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
@@ -17,7 +17,9 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
-import javax.jms.*;
+import javax.jms.ConnectionFactory;
+import javax.jms.DeliveryMode;
+import javax.jms.Session;
 
 /**
  * @author liaoyubo
@@ -85,34 +87,47 @@ public class ActiveMQConfig {
         return jmsTemplate;
     }
 
+    @Bean
+    public RedeliveryPolicy redeliveryPolicy(){
+        RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
+        // 是否在每次失败重发时增长等待时间
+        redeliveryPolicy.setUseExponentialBackOff(true);
+        // 设置重发最大拖延时间，-1 表示没有拖延，只有setUseExponentialBackOff(true)时生效
+        redeliveryPolicy.setMaximumRedeliveryDelay(-1);
+        // 重发次数
+        redeliveryPolicy.setMaximumRedeliveries(3);
+        // 重发时间间隔
+        redeliveryPolicy.setInitialRedeliveryDelay(2000);
+        // 第一次失败后重发前等待2秒，第二次2*2，依次递增
+        redeliveryPolicy.setBackOffMultiplier(2);
+        // 是否避免消息碰撞
+        redeliveryPolicy.setUseCollisionAvoidance(false);
+        // 避免消息碰撞的百分比
+        redeliveryPolicy.setCollisionAvoidancePercent((short)5);
+        // 开始发送重发消息的延迟时间
+        redeliveryPolicy.setRedeliveryDelay(2000);
+        // 这2个设置没有作用
+        redeliveryPolicy.setQueue("helloQueue1");
+        redeliveryPolicy.setTopic("helloTopic1");
+        return redeliveryPolicy;
+    }
+
     @Bean(value = "durableConnectionFactory")
-    public ConnectionFactory durableConnectionFactory() {
-        ActiveMQConnectionFactory connectionFactory = null;
-        Connection conn;
-
-        try {
-            // 创建连接工厂，可以在brokerUrl后面跟上jms.useAsyncSend=true来表示异步发送消息
-            connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
-            // 设置异步发送消息
-            connectionFactory.setAlwaysSyncSend(true);
-            // 创建连接
-            conn = connectionFactory.createConnection();
-            // 设置异步发送消息
-            //((ActiveMQConnection) conn).setAlwaysSyncSend(true);
-            conn.start();
-
-
-        } catch (JMSException e) {
-            log.error("持久连接工厂异常:{}",e);
-        }
+    public ConnectionFactory durableConnectionFactory(RedeliveryPolicy redeliveryPolicy) {
+        // 创建连接工厂，可以在brokerUrl后面跟上jms.useAsyncSend=true来表示异步发送消息
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(brokerUrl);
+        // 设置异步发送消息
+        connectionFactory.setAlwaysSyncSend(true);
+        // 设置重发的策略
+        connectionFactory.setRedeliveryPolicy(redeliveryPolicy);
         return connectionFactory;
     }
 
     @Bean
     @Primary
-    public JmsTemplate queueJmsTemplate(ConnectionFactory connectionFactory,
+    public JmsTemplate queueJmsTemplate(ConnectionFactory durableConnectionFactory,
                                         MessageConverter jacksonJmsMessageConverter) {
-        JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
+        JmsTemplate jmsTemplate = new JmsTemplate(durableConnectionFactory);
         // 消息的转换方式
         jmsTemplate.setMessageConverter(jacksonJmsMessageConverter);
         // 延迟发送,jms 2.0提供,在activemq中通过在message中设置ScheduledMessage.AMQ_SCHEDULED_PERIOD代替
@@ -123,7 +138,7 @@ public class ActiveMQConfig {
         jmsTemplate.setDeliveryPersistent(true);
         // 发送的消息的优先级，范围是0-9,消费者端优先级范围是0-127，TEST.QUEUE?consumer.priority=10，值越大优先级越高，不起作用
         //jmsTemplate.setPriority(2);
-        // 消息的存活时间
+        // 消息的存活时间，如果设置了重试机制，注意存活时间
         jmsTemplate.setTimeToLive(1000);
         // 消息确认机制
         jmsTemplate.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
@@ -137,7 +152,7 @@ public class ActiveMQConfig {
         // 在没有提供queue或topic情况下，默认提供queue
         jmsTemplate.setDefaultDestinationName("defaultQueue");
 
-        // 使用QosSettings值来提供默认的配置
+        // 使用QosSettings值来提供默认的配置，如果设置了重试机制，注意存活时间
         QosSettings qosSettings = new QosSettings(DeliveryMode.PERSISTENT, 8, 2000);
         jmsTemplate.setQosSettings(qosSettings);
         // 启用QosSettings配置
