@@ -156,6 +156,14 @@ public class OrdersController implements ConfirmCallback {
             orderDeleteDTO.setUserType("01");
             jmsTemplate.convertAndSend("helloQueue3",orderDeleteDTO,message -> {
                 message.setStringProperty("queueName", "helloQueue3");
+
+                // 设置消息组，用于有序的消费消息
+                message.setStringProperty("JMSXGroupID","helloQueue3Group");
+                // 用于表示消息消费完成后，关闭该消费组
+                message.setIntProperty("JMSXGroupSeq", -1);
+                // 用于重新启动消费者后清除一些缓存消息等操作的判断，
+                // 它只在一个客户端第一次连接的时候会发送true，后面都不会发送false
+                message.setBooleanProperty("JMSXGroupFirstForConsumer",true);
                 return message;
             });
             Destination destination = new ActiveMQQueue("helloQueue1");

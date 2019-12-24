@@ -208,6 +208,8 @@ public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmC
         //System.out.println("message:" + JSON.toJSONString(message));
         // 测试ack机制
         if ("helloQueue3".equals(queueName)){
+            System.out.println(message.getBooleanProperty("JMSXGroupFirstForConsumer"));
+            System.out.println(message.getJMSMessageID());
             throw new RuntimeException("故意抛出的异常");
         }
         message.acknowledge();
