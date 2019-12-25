@@ -122,7 +122,7 @@ public class ActiveMQConfig {
         connectionFactory.setRedeliveryPolicy(redeliveryPolicy);
         // 用于在等待来自节点的确认消息之前，生产者将传输给代理的最大数据字节数。防止超过内存限制
         connectionFactory.setProducerWindowSize(1024000);
-        // 针对非持久化消息，用于每次检查是否超过对应的queue或topic内存限制，这个会影响效率
+        // 针对异步的非持久化消息，用于每次检查是否超过对应的queue或topic内存限制，这个会影响效率
         connectionFactory.setAlwaysSyncSend(true);
         return connectionFactory;
     }
