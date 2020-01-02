@@ -143,7 +143,7 @@ public class ActiveMQConfig {
         // 发送的消息的优先级，范围是0-9,消费者端优先级范围是0-127，TEST.QUEUE?consumer.priority=10，值越大优先级越高，不起作用
         //jmsTemplate.setPriority(2);
         // 消息的存活时间，如果设置了重试机制，注意存活时间
-        jmsTemplate.setTimeToLive(1000);
+        jmsTemplate.setTimeToLive(10000);
         // 消息确认机制
         jmsTemplate.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
         // 按照名称来设置消息确认机制
@@ -157,7 +157,7 @@ public class ActiveMQConfig {
         jmsTemplate.setDefaultDestinationName("defaultQueue");
 
         // 使用QosSettings值来提供默认的配置，如果设置了重试机制，注意存活时间
-        QosSettings qosSettings = new QosSettings(DeliveryMode.PERSISTENT, 8, 2000);
+        QosSettings qosSettings = new QosSettings(DeliveryMode.PERSISTENT, 8, 20000);
         jmsTemplate.setQosSettings(qosSettings);
         // 启用QosSettings配置
         jmsTemplate.setExplicitQosEnabled(true);
@@ -169,7 +169,7 @@ public class ActiveMQConfig {
         // 设置是否禁止传递由其自己的连接发布的消息，默认false
         jmsTemplate.setPubSubNoLocal(false);
         // 设置消息接收的过期时间
-        jmsTemplate.setReceiveTimeout(1000);
+        jmsTemplate.setReceiveTimeout(5000);
         // 设置目标消息的解析类,默认DynamicDestinationResolver
         jmsTemplate.setDestinationResolver(new DynamicDestinationResolver());
         // 设置事务
