@@ -22,3 +22,4 @@ loadmodule /usr/local/redis-5.0.5/modlues/RedisBloom-2.0.0/redisbloom.so
 - 16.redis哨兵机制的验证
 - 17.新增redis cluster集群下key过期监控信息
 - 18.product模块下新增J2CACHE的二级缓存
+- 19.在order模块新增消息中间件ActiveMQ，实现了单机、主从集群、分布式主从集群
