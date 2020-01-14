@@ -15,6 +15,8 @@ import org.apache.activemq.ActiveMQMessageProducer;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.ScheduledMessage;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;
@@ -94,10 +96,18 @@ public class OrdersController implements ConfirmCallback {
 
             CorrelationData correlationData = new CorrelationData();
             correlationData.setId(uuid);
+            /*rabbitTemplate.convertAndSend(RabbitExchangeConstant.ORDER_EXCHANGE,
+                    RabbitRoutingKeyConstant.ORDER_ROUTING_KEY,
+                    ordersDTO,
+                    correlationData);*/
             rabbitTemplate.convertAndSend(RabbitExchangeConstant.ORDER_EXCHANGE,
                     RabbitRoutingKeyConstant.ORDER_ROUTING_KEY,
                     ordersDTO,
-                    correlationData);
+                    message -> {
+                        // 设置消息过期时间
+                        message.getMessageProperties().setExpiration("2000");
+                        return message;
+                    }, correlationData);
         } catch (Exception e) {
             log.error("新增订单错误:{}", e);
             baseResponse.setCode(ResponseCode.SERVER_ERROR);
@@ -122,11 +132,11 @@ public class OrdersController implements ConfirmCallback {
             jmsTemplate.execute((session, messageProducer) -> {
                 Message message = jmsTemplate.getMessageConverter().toMessage(orderDeleteDTO, session);
                 // 添加property属性，因为header为固定的
-                message.setStringProperty("delOrder","updateStatus");
-                if (UserTypeConstant.MERCHANT.equals(userType)){
-                    message.setStringProperty("delUserType","merchant");
-                }else {
-                    message.setStringProperty("delUserType","other");
+                message.setStringProperty("delOrder", "updateStatus");
+                if (UserTypeConstant.MERCHANT.equals(userType)) {
+                    message.setStringProperty("delUserType", "merchant");
+                } else {
+                    message.setStringProperty("delUserType", "other");
                 }
                 // jms2.0支持，共享订阅
                 //session.createSharedConsumer();
@@ -134,7 +144,7 @@ public class OrdersController implements ConfirmCallback {
                 messageProducer.setPriority(5);
                 // 同时定义给queue和topic发送
                 Queue queue = session.createQueue("queue://helloQueue,topic://durableHelloTopic");
-                messageProducer.send(queue,message);
+                messageProducer.send(queue, message);
                 return null;
             });
         } catch (Exception e) {
@@ -146,7 +156,7 @@ public class OrdersController implements ConfirmCallback {
     }
 
     @GetMapping("/testMQ")
-    public BaseResponse testMQ(){
+    public BaseResponse testMQ() {
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode(ResponseCode.SUCCESS);
         baseResponse.setMsg("删除订单成功");
@@ -154,21 +164,21 @@ public class OrdersController implements ConfirmCallback {
             OrderDeleteDTO orderDeleteDTO = new OrderDeleteDTO();
             orderDeleteDTO.setOrderId("1");
             orderDeleteDTO.setUserType("01");
-            jmsTemplate.convertAndSend("helloQueue3",orderDeleteDTO,message -> {
+            jmsTemplate.convertAndSend("helloQueue3", orderDeleteDTO, message -> {
                 message.setStringProperty("queueName", "helloQueue3");
 
                 // 设置消息组，用于有序的消费消息
-                message.setStringProperty("JMSXGroupID","helloQueue3Group");
+                message.setStringProperty("JMSXGroupID", "helloQueue3Group");
                 // 用于表示消息消费完成后，关闭该消费组
                 message.setIntProperty("JMSXGroupSeq", -1);
                 // 用于重新启动消费者后清除一些缓存消息等操作的判断，
                 // 它只在一个客户端第一次连接的时候会发送true，后面都不会发送false
-                message.setBooleanProperty("JMSXGroupFirstForConsumer",true);
+                message.setBooleanProperty("JMSXGroupFirstForConsumer", true);
                 return message;
             });
             Destination destination = new ActiveMQQueue("helloQueue1");
-            jmsTemplate.convertAndSend(destination, orderDeleteDTO,message -> {
-                message.setStringProperty("queueName","helloQueue1");
+            jmsTemplate.convertAndSend(destination, orderDeleteDTO, message -> {
+                message.setStringProperty("queueName", "helloQueue1");
                 // 延时6秒，间隔2秒 ,投递6次(投递次数=重复次数+默认的一次)
                 message.setLongProperty(ScheduledMessage.AMQ_SCHEDULED_DELAY, 6 * 1000L);
                 // 投递间隔
@@ -198,22 +208,22 @@ public class OrdersController implements ConfirmCallback {
             });
 
             Thread.sleep(5000);
-            jmsTemplate.convertAndSend("helloQueue2", orderDeleteDTO,message -> {
-                message.setStringProperty("queueName","helloQueue2");
+            jmsTemplate.convertAndSend("helloQueue2", orderDeleteDTO, message -> {
+                message.setStringProperty("queueName", "helloQueue2");
                 //message.setJMSPriority(1);
                 return message;
             });
 
             Thread.sleep(5000);
-            topicJmsTemplate.convertAndSend("helloTopic1",orderDeleteDTO,message -> {
-                message.setStringProperty("topicName","helloTopic1");
+            topicJmsTemplate.convertAndSend("helloTopic1", orderDeleteDTO, message -> {
+                message.setStringProperty("topicName", "helloTopic1");
                 return message;
             });
 
             Thread.sleep(5000);
-            topicJmsTemplate.convertAndSend("helloTopic2",orderDeleteDTO,message -> {
-                message.setStringProperty("topicName","helloTopic2");
-                message.setStringProperty("queueName","helloTopic2");
+            topicJmsTemplate.convertAndSend("helloTopic2", orderDeleteDTO, message -> {
+                message.setStringProperty("topicName", "helloTopic2");
+                message.setStringProperty("queueName", "helloTopic2");
                 return message;
             });
         } catch (Exception e) {
@@ -226,10 +236,11 @@ public class OrdersController implements ConfirmCallback {
 
     /**
      * 负载均衡测试
+     *
      * @return
      */
     @GetMapping("/testVirtualTopicMQ")
-    public BaseResponse testVirtualTopicMQ(){
+    public BaseResponse testVirtualTopicMQ() {
         BaseResponse baseResponse = new BaseResponse();
         baseResponse.setCode(ResponseCode.SUCCESS);
         baseResponse.setMsg("测试virtualTopic");
@@ -238,9 +249,9 @@ public class OrdersController implements ConfirmCallback {
             orderDeleteDTO.setOrderId("5");
             orderDeleteDTO.setUserType("01");
 
-            for (int i = 0;i < 10;i++){
-                topicJmsTemplate.convertAndSend("virtualTopic.topic", orderDeleteDTO,message -> {
-                    message.setStringProperty("name","virtualTopic");
+            for (int i = 0; i < 10; i++) {
+                topicJmsTemplate.convertAndSend("virtualTopic.topic", orderDeleteDTO, message -> {
+                    message.setStringProperty("name", "virtualTopic");
                     return message;
                 });
                 /*topicJmsTemplate.execute((session, producer) -> {

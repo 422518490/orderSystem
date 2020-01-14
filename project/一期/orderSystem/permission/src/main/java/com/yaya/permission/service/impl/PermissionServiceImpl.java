@@ -17,6 +17,7 @@ import com.yaya.permission.service.UserPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -28,7 +29,7 @@ import java.util.List;
 @Service
 public class PermissionServiceImpl implements PermissionService {
 
-    @Autowired
+    @Resource
     private PermissionMapperExt permissionMapperExt;
     @Autowired
     private UserPermissionService userPermissionService;

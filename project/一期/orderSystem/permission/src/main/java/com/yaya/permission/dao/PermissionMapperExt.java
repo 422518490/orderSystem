@@ -18,20 +18,20 @@ public interface PermissionMapperExt extends PermissionMapper {
      * @param permissionDTO
      * @return
      */
-    public List<PermissionDTO> getPermissions(PermissionDTO permissionDTO);
+    List<PermissionDTO> getPermissions(PermissionDTO permissionDTO);
 
     /**
      * 根据方法名称获取权限
      * @param methodName
      * @return
      */
-    public PermissionDTO getPermissionByMethod(String methodName);
+    PermissionDTO getPermissionByMethod(String methodName);
 
     /**
      * 根据用户类型获取方法列表
      * @param userType
      * @return
      */
-    public List<String> getMethodNameByType(String userType);
+    List<String> getMethodNameByType(String userType);
 
 }
