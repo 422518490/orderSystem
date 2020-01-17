@@ -42,7 +42,10 @@ public class OrderElasticConfig {
                 jobEventConfiguration);
     }
 
-    private LiteJobConfiguration getLiteJobConfiguration(final Class<? extends SimpleJob> jobClass, final String cron, final int shardingTotalCount, final String shardingItemParameters) {
+    private LiteJobConfiguration getLiteJobConfiguration(final Class<? extends SimpleJob> jobClass,
+                                                         final String cron,
+                                                         final int shardingTotalCount,
+                                                         final String shardingItemParameters) {
         return LiteJobConfiguration.newBuilder(
                 new SimpleJobConfiguration(
                         JobCoreConfiguration.newBuilder(

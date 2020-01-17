@@ -11,7 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @version 1.0 2018/3/26
  * @description 操作日志启动类
  */
-@SpringBootApplication(scanBasePackages = "com.yaya")
+@SpringBootApplication
 @EnableEurekaClient
 @EnableDiscoveryClient
 @EnableFeignClients

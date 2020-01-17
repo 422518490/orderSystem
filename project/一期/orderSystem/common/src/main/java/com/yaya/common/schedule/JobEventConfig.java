@@ -19,8 +19,11 @@ package com.yaya.common.schedule;
 
 import com.dangdang.ddframe.job.event.JobEventConfiguration;
 import com.dangdang.ddframe.job.event.rdb.JobEventRdbConfiguration;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.annotation.Order;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
@@ -29,7 +32,7 @@ import javax.sql.DataSource;
 public class JobEventConfig {
 
     @Resource
-    private DataSource dataSource;
+    private HikariDataSource dataSource;
 
     @Bean(name = "jobEventRdbConfiguration")
     public JobEventConfiguration jobEventConfiguration() {

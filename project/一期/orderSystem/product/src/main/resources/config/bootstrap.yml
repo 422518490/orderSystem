@@ -13,17 +13,21 @@ spring:
         #开启配置服务发现
         enabled: true
       #配置文件所在分支
-      label: master
+      label: springboot2.2
       #配置文件的开头名字
       name: product
       #配置文件的后面名字，如product-dev.properties
       profile: dev
       #配置服务中心
-      uri: http://localhost:8091/
+      #uri: http://localhost:8091/
       #git仓库的用户名
       #username:
       #git仓库的密码
       #password:
+      #检查快速连接上
+      fail-fast: true
+      # 失败后进行10次重连
+      retry: 10
     bus:
       id: product_bus
   boot:

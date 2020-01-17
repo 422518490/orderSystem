@@ -13,7 +13,7 @@ spring:
         #开启配置服务发现
         enabled: true
       #配置文件所在分支
-      label: master
+      label: springboot2.2
       #配置文件的开头名字
       name: merchant
       #配置文件的后面名字，如merchant-dev.properties

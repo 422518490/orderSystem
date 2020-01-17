@@ -13,22 +13,45 @@ spring:
         #开启配置服务发现
         enabled: true
       #配置文件所在分支
-      label: master
+      label: springboot2.2
       #配置文件的开头名字
       name: delivery
       #配置文件的后面名字，如merchant-dev.properties
       profile: dev
       #配置服务中心
-      uri: http://localhost:8091/
+      #uri: http://localhost:8091/
       #git仓库的用户名
       #username:
       #git仓库的密码
       #password:
     bus:
       id: delivery_bus
+  boot:
+    admin:
+      client:
+        url: http://localhost:8095
+        instance:
+          service-url: http://localhost:8010
+  activemq:
+    broker-url: failover:(tcp://localhost:61621,tcp://localhost:61625,tcp://localhost:61626,tcp://localhost:61622,tcp://localhost:61627,tcp://localhost:61623,tcp://localhost:61628)?randomize=true
 
 eureka:
   client:
     service-url:
       #eureka地址
       defaultZone: http://localhost:8010/eureka/
+
+
+listener:
+  redis:
+    #1表示redis的db1,针对单机过期
+    order_topic_expired: __keyevent@0__:expired
+    #针对删除某个特定的信息
+    order_topic_del: __keyspace@1__:order1 del
+
+order:
+  zookeeper:
+    # 加锁路径
+    lockpath: /zkOrder
+    # 持有锁时长
+    keeplocktime: 5

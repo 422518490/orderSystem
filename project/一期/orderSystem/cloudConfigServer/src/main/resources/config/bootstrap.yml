@@ -28,7 +28,7 @@ spring:
         #用于自定义访问路径如加解密时的端点
         prefix: config
       #配置文件所在的分支
-      label: master
+      label: springboot2.2
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
