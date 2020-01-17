@@ -20,7 +20,7 @@ spring:
       #指定校验连接合法性执行的sql语句
       connection-test-query: select 1
       auto-commit: true
-	  #注意的是这个地方的定义需要用在DataSourceConfig.java里面使用，是因为在定义JobEventConfig.java的时候需要引入自定义dataSource
+      #注意的是这个地方的定义需要用在DataSourceConfig.java里面使用，是因为在定义JobEventConfig.java的时候需要引入自定义dataSource
       username: '{cipher}b69478cd62edfbc06be69aafb7933fb24367d3ee0c6667d2fd70484a60f64097'
       password: '{cipher}b69478cd62edfbc06be69aafb7933fb24367d3ee0c6667d2fd70484a60f64097'
       jdbc-url: jdbc:mysql://localhost:3306/orderSystem?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
