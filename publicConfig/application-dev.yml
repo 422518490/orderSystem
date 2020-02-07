@@ -21,7 +21,8 @@ spring:
       connection-test-query: select 1
       auto-commit: true
   rabbitmq:
-    host: localhost
+    #host: localhost
+    host: 192.168.0.106
     port: 5672
     username: guest
     password: guest
