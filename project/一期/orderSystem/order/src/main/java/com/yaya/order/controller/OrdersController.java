@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @Slf4j
 @RequestMapping(value = "/order")
-public class OrdersController implements ConfirmCallback {
+public class OrdersController implements ConfirmCallback, RabbitTemplate.ReturnCallback {
 
     @Resource
     private RabbitTemplate rabbitTemplate;
@@ -290,6 +290,11 @@ public class OrdersController implements ConfirmCallback {
                         correlationData);
             }
         }
+    }
+
+    @Override
+    public void returnedMessage(org.springframework.amqp.core.Message message, int replyCode, String replyText, String exchange, String routingKey) {
+        // 业务处理
     }
 }
 

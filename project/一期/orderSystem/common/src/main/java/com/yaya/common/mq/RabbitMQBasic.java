@@ -12,6 +12,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author liaoyubo
  * @version 1.0 2018/3/26
@@ -39,7 +42,10 @@ public class RabbitMQBasic {
      */
     @Bean(name = "ordersExchange")
     public TopicExchange ordersExchange() {
-        return new TopicExchange(RabbitExchangeConstant.ORDER_EXCHANGE);
+        Map<String, Object> args = new HashMap();
+        // 备用交换设置
+        //args.put("alternate-exchange", "ordersExchangeAlternate");
+        return new TopicExchange(RabbitExchangeConstant.ORDER_EXCHANGE, true, false, args);
     }
 
     /**
@@ -68,16 +74,17 @@ public class RabbitMQBasic {
 
     /**
      * 订单已创建的队列
+     *
      * @return
      */
     @Bean(name = "orderCreatedQueue")
-    public Queue orderCreatedQueue(){
-        return new Queue(RabbitQueueConstant.ORDER_CREATED_QUEUE,true);
+    public Queue orderCreatedQueue() {
+        return new Queue(RabbitQueueConstant.ORDER_CREATED_QUEUE, true);
     }
 
     @Bean
     Binding bindingExchangeOrderCreated(@Qualifier("orderCreatedQueue") Queue queue,
-                                        @Qualifier("ordersExchange") TopicExchange topicExchange){
+                                        @Qualifier("ordersExchange") TopicExchange topicExchange) {
         // 绑定订单已创建队列到交换机上，同时配置路由key为topic.order.merchant
         return BindingBuilder.bind(queue).to(topicExchange).with(RabbitRoutingKeyConstant.ORDER_MERCHANT_ROUTING_KEY);
     }

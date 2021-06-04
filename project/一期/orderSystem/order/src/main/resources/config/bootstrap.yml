@@ -40,7 +40,7 @@ spring:
     broker-url: failover:(tcp://localhost:61621,tcp://localhost:61625,tcp://localhost:61626,tcp://localhost:61622,tcp://localhost:61627,tcp://localhost:61623,tcp://localhost:61628)?randomize=true
     #分布式集群配置下不能正确连接到所有的master节点
     #broker-url: failover:(tcp://localhost:61621,tcp://localhost:61622,tcp://localhost:61623)?updateURIsURL=file:/D:/software/connectUrl_network.txt
-    #broker-url: failover:(tcp://172.19.3.157:61616,tcp://172.19.3.157:61617,tcp://172.19.3.158:61616,tcp://172.19.3.158:61617,tcp://172.19.3.159:61616,tcp://172.19.3.159:61617)?randomize=true
+    #broker-url: failover:(tcp://172.193.31.157:61616,tcp://172.193.31.157:61617,tcp://172.193.31.158:61616,tcp://172.193.31.158:61617,tcp://172.193.31.159:61616,tcp://172.193.31.159:61617)?randomize=true
     #broker-url: failover:(tcp://localhost:61616)?updateURIsURL=file:/D:/software/apache-activemq-5.15.10/data/connectUrl.txt
   # 设置消费者预取的消息数量为10，即设置的数量queuePrefetch*10
     # 默认情况下预取的配置为：持久化和非持久化queue都为1000，持久化topic为100，非持久化topic为Short.MAX_VALUE - 1

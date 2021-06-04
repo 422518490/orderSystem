@@ -1,3 +1,4 @@
+/*
 package com.yaya.merchant.config;
 
 
@@ -12,12 +13,14 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 
 import javax.annotation.Resource;
 
+*/
 /**
  * @author liaoyubo
  * @version 1.0
  * @date 2018/8/3
  * @description redis监听容器配置
- */
+ *//*
+
 @Configuration
 public class RedisMessageListenerContainerConfig {
 
@@ -45,3 +48,4 @@ public class RedisMessageListenerContainerConfig {
         return container;
     }
 }
+*/

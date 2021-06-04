@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
  * @description
  */
 @Service
-@RabbitListener(queues = "ordersQueue")
+@RabbitListener(queues = "ordersQueue",priority = "10")
 @Slf4j
 public class OrdersServiceImpl implements OrdersService, RabbitTemplate.ConfirmCallback {
 

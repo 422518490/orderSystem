@@ -122,8 +122,9 @@ public class MerchantController implements UploadFileControllerInterface, Mercha
             currentUserData.setUserName(merchantDTO.getMerchantName());
             currentUserData.setUserType(merchantDTO.getUserType());
             currentUserData.setPhone(merchantDTO.getMerchantTelPhone());
-            currentUserData.setMethodNameList(methodNameList);
+            //currentUserData.setMethodNameList(methodNameList);
             redisUtil.set(accessToken, currentUserData, invalid);
+            redisUtil.set("liao","yubo",5L);
 
             // 清除商家敏感信息
             merchantDTO.setMerchantPassword("");

@@ -76,6 +76,7 @@ public class RedisMessageRefreshClusterNodeFactory {
                     ChannelTopic channelTopic = new ChannelTopic(listenerSetting.getOrderTopicExpired());
                     // 设置监听器
                     container.addMessageListener(messageListener, channelTopic);
+
                     // 必须调用，否则空指针异常
                     container.afterPropertiesSet();
                     // 启动监控

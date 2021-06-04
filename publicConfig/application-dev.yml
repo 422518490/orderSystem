@@ -30,6 +30,8 @@ spring:
     username: guest
     password: guest
     publisher-confirms: true
+    #开启消息回退
+    publisher-returns: true
     virtual-host: /
     listener:
       simple:
