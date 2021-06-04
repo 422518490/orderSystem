@@ -24,10 +24,10 @@ spring:
     #host: localhost
     host: 192.168.0.106
     port: 5672
-    #username: guest
-    #password: guest
-    username: admin
-    password: admin
+    #username: guest1
+    #password: guest1
+    username: admin1
+    password: admin1
     publisher-confirms: true
     virtual-host: /
     listener:
