@@ -22,12 +22,12 @@ spring:
       auto-commit: true
   rabbitmq:
     #host: localhost
-    host: 192.168.0.106
+    host: 192.168.10.106
     port: 5672
-    #username: guest
-    #password: guest
-    username: admin
-    password: admin
+    #username: guest1
+    #password: guest1
+    username: admin1
+    password: admin1
     publisher-confirms: true
     virtual-host: /
     listener:
@@ -44,14 +44,14 @@ spring:
     cluster:
       max-redirects: 3
       nodes:
-        - 172.19.3.157:6359
-        - 172.19.3.157:6360
-        - 172.19.3.157:6361
-        - 172.19.3.157:6362
-        - 172.19.3.158:6359
-        - 172.19.3.158:6360
-        - 172.19.3.159:6359
-        - 172.19.3.159:6360
+        - 172.191.32.157:6359
+        - 172.191.32.157:6360
+        - 172.191.32.157:6361
+        - 172.191.32.157:6362
+        - 172.191.32.158:6359
+        - 172.191.32.158:6360
+        - 172.191.32.159:6359
+        - 172.191.32.159:6360
     #host: 172.193.32.157
     #port: 6389
     lettuce:
