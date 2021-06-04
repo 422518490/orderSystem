@@ -16,5 +16,5 @@ spring:
 
 #加密盐值
 encrypt:
-  key: 1234abcd-
+  key: 12345abcd-
 
